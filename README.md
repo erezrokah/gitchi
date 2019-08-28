@@ -1,4 +1,4 @@
-# github-pullrequest-chat
+# Gitchi
 
 Turns GitHub Pull Request Comments into a Chat
 
