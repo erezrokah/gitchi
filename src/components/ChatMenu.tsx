@@ -2,8 +2,15 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Menu, MenuItemProps, Icon } from 'semantic-ui-react';
 
-export const ChatMenu = () => {
+interface Props {
+  onMenuToggle: (collapsed: boolean) => void;
+}
+
+export const ChatMenu = (props: Props) => {
+  const { onMenuToggle } = props;
+
   const [active, setActive] = useState('channel-1');
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleItemClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -12,7 +19,10 @@ export const ChatMenu = () => {
     setActive(name || '');
   };
 
-  const handleClose = () => {};
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+    onMenuToggle(!collapsed);
+  };
 
   return (
     <Menu tabular attached="top">
@@ -23,15 +33,27 @@ export const ChatMenu = () => {
       >
         Channel 1
       </Menu.Item>
-      <Menu.Item
-        name="new-tab"
-        active={active === 'new-tab'}
-        onClick={handleClose}
-        position="right"
-      >
-        <Icon name="close" />
-        Close
-      </Menu.Item>
+      {collapsed ? (
+        <Menu.Item
+          name="open"
+          active={false}
+          position="right"
+          onClick={toggleCollapse}
+        >
+          <Icon name="arrow up" />
+          Open
+        </Menu.Item>
+      ) : (
+        <Menu.Item
+          name="collapse"
+          active={false}
+          position="right"
+          onClick={toggleCollapse}
+        >
+          <Icon name="arrow down" />
+          Collapse
+        </Menu.Item>
+      )}
     </Menu>
   );
 };
