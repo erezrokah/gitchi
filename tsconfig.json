@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "lib": ["esnext", "dom"],
+    "sourceMap": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noEmitOnError": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "rootDir": "src",
+    "outDir": "dist/js",
+    "typeRoots": ["node_modules/@types"],
+    "jsx": "react"
+  }
+}
