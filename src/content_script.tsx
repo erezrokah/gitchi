@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
-import './css/content_script.css';
+import './content_script.css';
 
 const tabs = document.querySelector('[class="tabnav-tabs"]');
 if (tabs) {
@@ -12,7 +12,7 @@ if (tabs) {
   chatButton.setAttribute('class', 'tabnav-tab js-pjax-history-navigate');
   tabs.appendChild(chatButton);
 
-  import('./components/OpenChatButton').then(({ OpenChatButton }) => {
+  import('./frontend/components/OpenChatButton').then(({ OpenChatButton }) => {
     ReactDOM.render(<OpenChatButton />, document.getElementById(buttonId));
   });
 
@@ -23,7 +23,7 @@ if (tabs) {
   chat.setAttribute('style', 'display: block;');
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   document.body.parentNode!.appendChild(chat);
-  import('./components/Chat').then(({ Chat }) => {
+  import('./frontend/components/Chat').then(({ Chat }) => {
     ReactDOM.render(<Chat />, document.getElementById(chatId));
   });
 }

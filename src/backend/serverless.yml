@@ -1,0 +1,112 @@
+service: gitchi
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-scriptable-plugin
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  tracing:
+    lambda: true
+
+  stage: ${opt:stage, 'staging'}
+  region: ${opt:region, 'us-east-1'}
+
+  memorySize: 256
+  logRetentionInDays: 7
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
+
+custom:
+  authSsmParameters:
+    GIT_HOSTNAME: "/${self:service}/oauth/${self:provider.stage}/GIT_HOSTNAME"
+    OAUTH_TOKEN_PATH: "/${self:service}/oauth/${self:provider.stage}/OAUTH_TOKEN_PATH"
+    OAUTH_AUTHORIZE_PATH: "/${self:service}/oauth/${self:provider.stage}/OAUTH_AUTHORIZE_PATH"
+    OAUTH_CLIENT_ID: "/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_ID"
+    OAUTH_CLIENT_SECRET: "/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_SECRET"
+    REDIRECT_URL: "/${self:service}/oauth/${self:provider.stage}/REDIRECT_URL"
+    OAUTH_SCOPES: "/${self:service}/oauth/${self:provider.stage}/OAUTH_SCOPES"
+
+  scriptHooks:
+    after:deploy:finalize:
+      - scripts/envSetup.js
+
+  webpack:
+    webpackConfig: webpack.config.js
+    includeModules: false
+    packager: "yarn"
+
+package:
+  individually: true
+
+functions:
+  auth:
+    handler: src/auth.handler
+    events:
+      - http:
+          path: /auth
+          method: get
+          cors: true
+    environment:
+      GIT_HOSTNAME: ${self:custom.authSsmParameters.GIT_HOSTNAME}
+      OAUTH_TOKEN_PATH: ${self:custom.authSsmParameters.OAUTH_TOKEN_PATH}
+      OAUTH_AUTHORIZE_PATH: ${self:custom.authSsmParameters.OAUTH_AUTHORIZE_PATH}
+      OAUTH_CLIENT_ID: ${self:custom.authSsmParameters.OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${self:custom.authSsmParameters.OAUTH_CLIENT_SECRET}
+      REDIRECT_URL: ${self:custom.authSsmParameters.REDIRECT_URL}
+      OAUTH_SCOPES: ${self:custom.authSsmParameters.OAUTH_SCOPES}
+
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ssm:GetParameters
+        Resource: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*"
+
+  callback:
+    handler: src/callback.handler
+    events:
+      - http:
+          path: /callback
+          method: get
+          cors: true
+    environment:
+      GIT_HOSTNAME: ${self:custom.authSsmParameters.GIT_HOSTNAME}
+      OAUTH_TOKEN_PATH: ${self:custom.authSsmParameters.OAUTH_TOKEN_PATH}
+      OAUTH_AUTHORIZE_PATH: ${self:custom.authSsmParameters.OAUTH_AUTHORIZE_PATH}
+      OAUTH_CLIENT_ID: ${self:custom.authSsmParameters.OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${self:custom.authSsmParameters.OAUTH_CLIENT_SECRET}
+      REDIRECT_URL: ${self:custom.authSsmParameters.REDIRECT_URL}
+      OAUTH_SCOPES: ${self:custom.authSsmParameters.OAUTH_SCOPES}
+
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ssm:GetParameters
+        Resource: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*"
+
+  success:
+    handler: src/success.handler
+    events:
+      - http:
+          path: /success
+          method: get
+          cors: true
+
+  default:
+    handler: src/default.handler
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true

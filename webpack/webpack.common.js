@@ -1,5 +1,9 @@
 const webpack = require('webpack');
 const path = require('path');
+const dotenv = require('dotenv').config({
+  path: path.join(__dirname, '..', 'src', 'frontend', '.env'),
+});
+
 const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = '../src/';
 
@@ -46,5 +50,10 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
-  plugins: [new CopyPlugin([{ from: './public', to: './' }])],
+  plugins: [
+    new CopyPlugin([{ from: './public', to: './' }]),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(dotenv.parsed),
+    }),
+  ],
 };
