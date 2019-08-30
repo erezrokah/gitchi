@@ -71,3 +71,29 @@ export const getCurrentUser = async () => {
     }
   }
 };
+
+export const getPullRequest = async (
+  repoOwner: string,
+  repoName: string,
+  prNumber: number,
+) => {
+  const client = await getApolloClient();
+  const { data } = await client.query({
+    query: queries.pullRequest,
+    variables: { repoOwner, repoName, prNumber },
+  });
+
+  const { pullRequest } = data.repository;
+  const { bodyText, createdAt, author, id } = pullRequest;
+  const comments = pullRequest.comments.nodes;
+  return {
+    ...data.repository.pullRequest,
+    channels: [
+      {
+        key: 'main',
+        title: 'Main',
+        comments: [{ bodyText, createdAt, author, id }, ...comments],
+      },
+    ],
+  };
+};

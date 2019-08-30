@@ -4,12 +4,14 @@ import { Menu, MenuItemProps, Icon } from 'semantic-ui-react';
 
 interface Props {
   onMenuToggle: (collapsed: boolean) => void;
+  onChannelSelect: (key: string) => void;
+  channels: Channel[];
 }
 
 export const ChatMenu = (props: Props) => {
-  const { onMenuToggle } = props;
+  const { onMenuToggle, onChannelSelect } = props;
 
-  const [active, setActive] = useState('channel-1');
+  const [active, setActive] = useState('main');
   const [collapsed, setCollapsed] = useState(false);
 
   const handleItemClick = (
@@ -17,6 +19,7 @@ export const ChatMenu = (props: Props) => {
     { name }: MenuItemProps,
   ) => {
     setActive(name || '');
+    onChannelSelect(name || '');
   };
 
   const toggleCollapse = () => {
@@ -24,15 +27,22 @@ export const ChatMenu = (props: Props) => {
     onMenuToggle(!collapsed);
   };
 
-  return (
-    <Menu tabular attached="top">
+  const items = props.channels.map(({ key, title }) => {
+    return (
       <Menu.Item
-        name="channel-1"
-        active={active === 'channel-1'}
+        key={key}
+        name={key}
+        active={active === key}
         onClick={handleItemClick}
       >
-        Channel 1
+        {title}
       </Menu.Item>
+    );
+  });
+
+  return (
+    <Menu tabular attached="top">
+      {items}
       {collapsed ? (
         <Menu.Item
           name="open"

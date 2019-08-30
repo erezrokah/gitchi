@@ -18,6 +18,7 @@ const url = `https://github.com/login/oauth/authorize?${encodeQueryData({
   client_id: process.env.REACT_APP_OAUTH_CLIENT_ID || '',
   state: cryptoRandomString({ length: 32, type: 'url-safe' }),
   allow_signup: `${false}`,
+  scope: 'public_repo',
 })}`;
 
 interface Data {
