@@ -36,7 +36,14 @@
     "semantic-ui-react": "^0.88.0",
     "styled-components": "^4.3.2"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "devDependencies": {
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
     "@types/aws-lambda": "^8.10.31",
     "@types/chrome": "0.0.86",
     "@types/jquery": "^3.3.30",
@@ -55,6 +62,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
     "fs-extra": "^8.1.0",
+    "husky": "^3.0.4",
     "jest": "^24.9.0",
     "js-yaml": "^3.13.1",
     "npm-run-all": "^4.1.5",
