@@ -17,6 +17,8 @@ interface Comment {
   bodyText: string;
   createdAt: Date;
   author: Author;
+  inReplyToId?: number;
+  path?: string;
 }
 
 interface ChannelWithComments extends Channel {
@@ -24,6 +26,7 @@ interface ChannelWithComments extends Channel {
 }
 
 interface Pr {
+  id: string;
   bodyText: string;
   title: string;
   author: Author;

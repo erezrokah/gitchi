@@ -20,7 +20,7 @@ interface State {
 const initialState: State = {
   collapsed: false,
   loading: true,
-  channel: 'main',
+  channel: '',
 };
 
 type Payload = boolean | User | Pr | string;
@@ -147,11 +147,54 @@ const useGetPullRequestEffect = (
   }, [user, dispatch]);
 };
 
+const useWebSocketEffect = (user: User | undefined, dispatch: Dispatch) => {
+  useEffect(() => {
+    if (user) {
+      const webSocketLink = document.querySelector(
+        'link[rel="web-socket"]',
+      ) as HTMLLinkElement;
+
+      if (webSocketLink) {
+        const socket = new WebSocket(webSocketLink.href);
+
+        socket.addEventListener('open', () => {
+          console.log('GitHub WebSocket open');
+        });
+
+        socket.addEventListener('close', () => {
+          console.log('GitHub WebSocket close');
+        });
+
+        // Listen for messages
+        socket.addEventListener('message', function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            if (data[0] && data[0].startsWith('pull_request:')) {
+              const pr = {
+                id: data[0].split(':')[1] || '',
+                ...data[1],
+              };
+              console.log('GitHub Pull Request Updated', pr);
+              setTimeout(
+                () => useGetPullRequestCallback(getPullRequest, dispatch),
+                pr.wait,
+              );
+            }
+          } catch (e) {
+            console.log('error', e);
+          }
+        });
+      }
+    }
+  }, [user, dispatch]);
+};
+
 export const Chat = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useGetCurrentUserEffect(dispatch);
   useGetPullRequestEffect(state.user, dispatch);
+  useWebSocketEffect(state.user, dispatch);
 
   const toggleMenu = (collapsed: boolean) => {
     dispatch({
@@ -189,7 +232,10 @@ export const Chat = () => {
 
   const { collapsed, pr, channel } = state;
 
-  const activeChannel = pr.channels.find(c => c.key === channel);
+  const activeChannel = channel
+    ? pr.channels.find(c => c.key === channel)
+    : pr.channels[0];
+
   const comments = activeChannel ? activeChannel.comments : [];
 
   return (

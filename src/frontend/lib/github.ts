@@ -1,12 +1,3 @@
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { createHttpLink } from 'apollo-link-http';
-import { setContext } from 'apollo-link-context';
-import * as queries from './queries';
-
-const NO_CACHE = 'no-cache';
-const CACHE_FIRST = 'cache-first';
-
 export class AuthorizationError extends Error {}
 
 const getToken = async () => {
@@ -27,49 +18,30 @@ const getToken = async () => {
   return token;
 };
 
-const getApolloClient = async () => {
-  const token = await getToken();
-  const authLink = setContext((_, { headers }) => {
-    return {
-      headers: {
-        ...headers,
-        ...(token && { authorization: `token ${token}` }),
-      },
-    };
-  });
-  const httpLink = createHttpLink({ uri: `https://api.github.com/graphql` });
+const API_ENDPOINT = 'https://api.github.com/';
 
-  return new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
-    defaultOptions: {
-      watchQuery: {
-        fetchPolicy: NO_CACHE,
-        errorPolicy: 'ignore',
-      },
-      query: {
-        fetchPolicy: NO_CACHE,
-        errorPolicy: 'all',
-      },
+const get = async (path: string) => {
+  const token = await getToken();
+  const url = path.startsWith(API_ENDPOINT) ? path : `${API_ENDPOINT}${path}`;
+  const response = await fetch(`${url}?timestamp=${Date.now()}`, {
+    headers: {
+      authorization: `token ${token}`,
     },
   });
+
+  if (response.status === 401) {
+    throw new AuthorizationError(response.statusText);
+  } else if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return response;
 };
 
 export const getCurrentUser = async () => {
-  try {
-    const client = await getApolloClient();
-    const { data } = await client.query({
-      query: queries.viewer,
-      fetchPolicy: CACHE_FIRST,
-    });
-    return data.viewer;
-  } catch (e) {
-    if (e.statusCode === 401) {
-      throw new AuthorizationError();
-    } else {
-      throw e;
-    }
-  }
+  const user = await get('user');
+  const { avatar_url: avatarUrl, login, name } = await user.json();
+  return { avatarUrl, login, name };
 };
 
 export const parseLinkHeader = (link: string) => {
@@ -94,7 +66,7 @@ export const parseLinkHeader = (link: string) => {
   return result;
 };
 
-const getAllResponses = async (url: string, options: RequestInit) => {
+const getAllResponses = async (url: string) => {
   const maxResponses = 30;
   let responseCount = 1;
 
@@ -103,7 +75,7 @@ const getAllResponses = async (url: string, options: RequestInit) => {
   let nextURL = url;
 
   while (responseCount < maxResponses) {
-    const pageResponse = await fetch(nextURL, options);
+    const pageResponse = await get(nextURL);
     pageResponses.push(pageResponse);
     responseCount++;
 
@@ -121,25 +93,32 @@ const getAllResponses = async (url: string, options: RequestInit) => {
   return jsons.flat();
 };
 
+interface IssueComment {
+  id: number;
+  body: string;
+  created_at: Date;
+  user: {
+    login: string;
+    avatar_url: string;
+  };
+}
+interface PrComment extends IssueComment {
+  in_reply_to_id?: number;
+  path: string;
+}
+
 export const getReviewComments = async (
   repoOwner: string,
   repoName: string,
   prNumber: number,
 ) => {
-  const token = await getToken();
-
   const result = await getAllResponses(
-    `https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${prNumber}/comments`,
-    {
-      headers: {
-        authorization: `token ${token}`,
-      },
-    },
+    `repos/${repoOwner}/${repoName}/pulls/${prNumber}/comments`,
   );
 
   const byReviewId: Record<
     string,
-    { key: string; title: string; comments: unknown[] }
+    { key: string; title: string; comments: Comment[] }
   > = {};
 
   result.forEach(
@@ -150,24 +129,24 @@ export const getReviewComments = async (
       in_reply_to_id: inReplyToId,
       user,
       path,
-    }) => {
+    }: PrComment) => {
+      const idStr = `${id}`;
       const comment = {
         bodyText,
         createdAt,
-        id,
+        id: idStr,
         inReplyToId,
         author: {
           avatarUrl: user.avatar_url,
           login: user.login,
         },
-      };
-      id = `${id}`;
+      } as Comment;
 
       if (inReplyToId && byReviewId[inReplyToId]) {
         byReviewId[inReplyToId].comments.push(comment);
       } else {
         byReviewId[id] = {
-          key: id,
+          key: idStr,
           title: path.replace(/^.*[\\\/]/, ''),
           comments: [comment],
         };
@@ -182,27 +161,48 @@ export const getPullRequest = async (
   repoOwner: string,
   repoName: string,
   prNumber: number,
-) => {
-  const client = await getApolloClient();
-  const { data } = await client.query({
-    query: queries.pullRequest,
-    variables: { repoOwner, repoName, prNumber },
-  });
+): Promise<Pr> => {
+  const [pullRequest, commentsData, reviewComments] = await Promise.all([
+    get(`repos/${repoOwner}/${repoName}/pulls/${prNumber}`).then(r => r.json()),
+    get(`repos/${repoOwner}/${repoName}/issues/${prNumber}/comments`).then(r =>
+      r.json(),
+    ),
+    getReviewComments(repoOwner, repoName, prNumber),
+  ]);
 
-  const reviewComments = await getReviewComments(repoOwner, repoName, prNumber);
+  const comments = commentsData.map(
+    ({ id, body: bodyText, user, created_at: createdAt }: IssueComment) => ({
+      bodyText,
+      createdAt,
+      id: `${id}`,
+      author: {
+        avatarUrl: user.avatar_url,
+        login: user.login,
+      },
+    }),
+  );
 
-  const { pullRequest } = data.repository;
-  const { bodyText, createdAt, author, id } = pullRequest;
-  const comments = pullRequest.comments.nodes;
-  return {
-    ...data.repository.pullRequest,
+  const pr = {
+    id: `${pullRequest.id}`,
+    bodyText: pullRequest.body,
+    title: pullRequest.title,
+    author: {
+      avatarUrl: pullRequest.user.avatar_url,
+      login: pullRequest.user.login,
+    },
+  };
+
+  const result = {
+    ...pr,
     channels: [
       {
-        key: 'main',
+        key: pr.id,
         title: 'Main',
-        comments: [{ bodyText, createdAt, author, id }, ...comments],
+        comments: [pr, ...comments],
       },
       ...reviewComments,
     ],
   };
+
+  return result;
 };

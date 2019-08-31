@@ -21,7 +21,7 @@ interface Props {
 export const ChatMenu = (props: Props) => {
   const { onMenuToggle, onChannelSelect } = props;
 
-  const [active, setActive] = useState('main');
+  const [active, setActive] = useState(props.channels[0].key);
   const [collapsed, setCollapsed] = useState(false);
 
   const toggleCollapse = () => {
