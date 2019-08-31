@@ -22,8 +22,10 @@ const API_ENDPOINT = 'https://api.github.com/';
 
 const get = async (path: string) => {
   const token = await getToken();
-  const url = path.startsWith(API_ENDPOINT) ? path : `${API_ENDPOINT}${path}`;
-  const response = await fetch(`${url}?timestamp=${Date.now()}`, {
+  const url = path.startsWith(API_ENDPOINT)
+    ? path
+    : `${API_ENDPOINT}${path}?timestamp=${Date.now()}`;
+  const response = await fetch(url, {
     headers: {
       authorization: `token ${token}`,
     },
@@ -35,6 +37,20 @@ const get = async (path: string) => {
     throw new Error(response.statusText);
   }
 
+  return response;
+};
+
+const post = async (path: string, data = {}) => {
+  const token = await getToken();
+  const url = `${API_ENDPOINT}${path}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `token ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
   return response;
 };
 
@@ -108,18 +124,15 @@ interface PrComment extends IssueComment {
 }
 
 export const getReviewComments = async (
-  repoOwner: string,
-  repoName: string,
+  owner: string,
+  repo: string,
   prNumber: number,
 ) => {
   const result = await getAllResponses(
-    `repos/${repoOwner}/${repoName}/pulls/${prNumber}/comments`,
+    `repos/${owner}/${repo}/pulls/${prNumber}/comments`,
   );
 
-  const byReviewId: Record<
-    string,
-    { key: string; title: string; comments: Comment[] }
-  > = {};
+  const byReviewId: Record<string, Channel> = {};
 
   result.forEach(
     ({
@@ -148,6 +161,7 @@ export const getReviewComments = async (
         byReviewId[id] = {
           key: idStr,
           title: path.replace(/^.*[\\\/]/, ''),
+          isReview: true,
           comments: [comment],
         };
       }
@@ -158,16 +172,16 @@ export const getReviewComments = async (
 };
 
 export const getPullRequest = async (
-  repoOwner: string,
-  repoName: string,
+  owner: string,
+  repo: string,
   prNumber: number,
 ): Promise<Pr> => {
   const [pullRequest, commentsData, reviewComments] = await Promise.all([
-    get(`repos/${repoOwner}/${repoName}/pulls/${prNumber}`).then(r => r.json()),
-    get(`repos/${repoOwner}/${repoName}/issues/${prNumber}/comments`).then(r =>
+    get(`repos/${owner}/${repo}/pulls/${prNumber}`).then(r => r.json()),
+    get(`repos/${owner}/${repo}/issues/${prNumber}/comments`).then(r =>
       r.json(),
     ),
-    getReviewComments(repoOwner, repoName, prNumber),
+    getReviewComments(owner, repo, prNumber),
   ]);
 
   const comments = commentsData.map(
@@ -198,6 +212,7 @@ export const getPullRequest = async (
       {
         key: pr.id,
         title: 'Main',
+        isReview: false,
         comments: [pr, ...comments],
       },
       ...reviewComments,
@@ -205,4 +220,27 @@ export const getPullRequest = async (
   };
 
   return result;
+};
+
+export const createPullRequestComment = async (
+  owner: string,
+  repo: string,
+  prNumber: number,
+  isReview: boolean,
+  body: string,
+  commentId: string,
+) => {
+  if (isReview) {
+    const result = await post(
+      `repos/${owner}/${repo}/pulls/${prNumber}/comments/${commentId}/replies`,
+      { body },
+    );
+    console.log(await result.json());
+  } else {
+    const result = await post(
+      `repos/${owner}/${repo}/issues/${prNumber}/comments`,
+      { body },
+    );
+    console.log(await result.json());
+  }
 };

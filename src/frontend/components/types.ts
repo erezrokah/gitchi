@@ -7,11 +7,6 @@ interface User extends Author {
   name: string;
 }
 
-interface Channel {
-  key: string;
-  title: string;
-}
-
 interface Comment {
   id: string;
   bodyText: string;
@@ -21,7 +16,10 @@ interface Comment {
   path?: string;
 }
 
-interface ChannelWithComments extends Channel {
+interface Channel {
+  key: string;
+  title: string;
+  isReview: boolean;
   comments: Comment[];
 }
 
@@ -30,5 +28,5 @@ interface Pr {
   bodyText: string;
   title: string;
   author: Author;
-  channels: ChannelWithComments[];
+  channels: Channel[];
 }

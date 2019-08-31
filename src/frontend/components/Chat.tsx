@@ -4,10 +4,12 @@ import {
   getCurrentUser,
   getPullRequest,
   AuthorizationError,
+  createPullRequestComment,
 } from '../lib/github';
 import { ChatMenu as Menu } from './ChatMenu';
 import { ChatFeed as Feed } from './ChatFeed';
 import { Auth } from './Auth';
+import { MessageBox } from './MessageBox';
 
 interface State {
   collapsed: boolean;
@@ -106,16 +108,27 @@ export const useGetCurrentUserCallback = (
 
 type GetPullRequestType = typeof getPullRequest;
 
+const parseLocation = () => {
+  const match = window.location.href.match(
+    /https:\/\/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/,
+  );
+
+  if (match) {
+    return { owner: match[1], repo: match[2], prNumber: parseInt(match[3]) };
+  } else {
+    return null;
+  }
+};
+
 export const useGetPullRequestCallback = (
   getPullRequest: GetPullRequestType,
   dispatch: Dispatch,
 ) => {
   let isSubscribed = true;
-  const match = window.location.href.match(
-    /https:\/\/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/,
-  );
-  if (match) {
-    getPullRequest(match[1], match[2], parseInt(match[3])).then(pr => {
+  const parsed = parseLocation();
+  if (parsed) {
+    const { owner, repo, prNumber } = parsed;
+    getPullRequest(owner, repo, prNumber).then(pr => {
       if (isSubscribed) {
         dispatch({
           payload: pr,
@@ -236,6 +249,22 @@ export const Chat = () => {
     ? pr.channels.find(c => c.key === channel)
     : pr.channels[0];
 
+  const onSendMessage = async (message: string) => {
+    const parsed = parseLocation();
+    if (parsed && activeChannel) {
+      const { owner, repo, prNumber } = parsed;
+      const { isReview, key } = activeChannel;
+      await createPullRequestComment(
+        owner,
+        repo,
+        prNumber,
+        isReview,
+        message,
+        key,
+      );
+    }
+  };
+
   const comments = activeChannel ? activeChannel.comments : [];
 
   return (
@@ -243,9 +272,10 @@ export const Chat = () => {
       <Menu
         onMenuToggle={toggleMenu}
         onChannelSelect={selectChannel}
-        channels={pr.channels.map(({ key, title }) => ({ key, title }))}
+        channels={pr.channels}
       />
       {collapsed ? null : <Feed comments={comments} />}
+      {collapsed ? null : <MessageBox onSendMessage={onSendMessage} />}
     </div>
   );
 };
