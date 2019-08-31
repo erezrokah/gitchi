@@ -149,6 +149,7 @@ export const getReviewComments = async (
       created_at: createdAt,
       in_reply_to_id: inReplyToId,
       user,
+      path,
     }) => {
       const comment = {
         bodyText,
@@ -167,7 +168,7 @@ export const getReviewComments = async (
       } else {
         byReviewId[id] = {
           key: id,
-          title: id,
+          title: path.replace(/^.*[\\\/]/, ''),
           comments: [comment],
         };
       }

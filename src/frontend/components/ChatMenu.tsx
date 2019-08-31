@@ -40,30 +40,40 @@ export const ChatMenu = (props: Props) => {
     );
   });
 
-  return (
-    <Menu tabular attached="top">
-      {items}
-      {collapsed ? (
-        <Menu.Item
-          name="open"
-          active={false}
-          position="right"
-          onClick={toggleCollapse}
-        >
-          <Icon name="arrow up" />
-          Open
-        </Menu.Item>
-      ) : (
-        <Menu.Item
-          name="collapse"
-          active={false}
-          position="right"
-          onClick={toggleCollapse}
-        >
-          <Icon name="arrow down" />
-          Collapse
-        </Menu.Item>
-      )}
-    </Menu>
+  const collapseButton = collapsed ? (
+    <Menu.Item
+      name="open"
+      active={false}
+      position="right"
+      onClick={toggleCollapse}
+    >
+      <Icon name="arrow up" />
+      Open
+    </Menu.Item>
+  ) : (
+    <Menu.Item
+      name="collapse"
+      active={false}
+      position="right"
+      onClick={toggleCollapse}
+    >
+      <Icon name="arrow down" />
+      Collapse
+    </Menu.Item>
   );
+
+  const menus: React.ReactElement[] = [];
+  const itemsPerRow = 4;
+  for (let index = 0; index < items.length; index = index + itemsPerRow) {
+    const part = items.slice(index, index + itemsPerRow);
+
+    menus.push(
+      <Menu tabular attached="top" key={index}>
+        {part}
+        {index === 0 ? collapseButton : null}
+      </Menu>,
+    );
+  }
+
+  return <div>{menus}</div>;
 };

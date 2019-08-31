@@ -179,8 +179,12 @@ export const Chat = () => {
     return <div />;
   }
 
-  if (!state.user || !state.pr) {
+  if (!state.user) {
     return <Auth onAuthSuccess={onAuthSuccess} />;
+  }
+
+  if (!state.pr) {
+    return <div />;
   }
 
   const { collapsed, pr, channel } = state;
