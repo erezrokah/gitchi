@@ -1,6 +1,16 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Menu, MenuItemProps, Icon } from 'semantic-ui-react';
+import styled from 'styled-components';
+
+const StyledItem = styled(Menu.Item)`
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+`;
 
 interface Props {
   onMenuToggle: (collapsed: boolean) => void;
@@ -14,29 +24,34 @@ export const ChatMenu = (props: Props) => {
   const [active, setActive] = useState('main');
   const [collapsed, setCollapsed] = useState(false);
 
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+    onMenuToggle(!collapsed);
+  };
+
   const handleItemClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     { name }: MenuItemProps,
   ) => {
     setActive(name || '');
     onChannelSelect(name || '');
-  };
 
-  const toggleCollapse = () => {
-    setCollapsed(!collapsed);
-    onMenuToggle(!collapsed);
+    if (collapsed) {
+      toggleCollapse();
+    }
   };
 
   const items = props.channels.map(({ key, title }) => {
     return (
-      <Menu.Item
+      <StyledItem
         key={key}
         name={key}
         active={active === key}
         onClick={handleItemClick}
+        title={title}
       >
         {title}
-      </Menu.Item>
+      </StyledItem>
     );
   });
 
