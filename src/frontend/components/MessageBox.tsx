@@ -42,6 +42,7 @@ export const MessageBox = (props: Props) => {
         icon: 'send',
         onClick: sendMessage,
         primary: true,
+        title: 'Send Message',
       }}
     />
   );

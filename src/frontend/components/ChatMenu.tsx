@@ -61,6 +61,7 @@ export const ChatMenu = (props: Props) => {
       active={false}
       position="right"
       onClick={toggleCollapse}
+      title="Open"
     >
       <Icon name="arrow up" />
       Open
@@ -71,6 +72,7 @@ export const ChatMenu = (props: Props) => {
       active={false}
       position="right"
       onClick={toggleCollapse}
+      title="Collapse"
     >
       <Icon name="arrow down" />
       Collapse
