@@ -4,9 +4,9 @@ import { Feed, Segment } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 const StyledSegment = styled(Segment)`
-  max-height: 500px;
+  height: 500px;
+  width: 500px;
   overflow: auto;
-  overflow-x: hidden;
 `;
 
 interface Props {
@@ -55,7 +55,7 @@ export const ChatFeed = (props: Props) => {
           ref: React.Ref<HTMLDivElement>,
         ) {
           return (
-            <div key={id} ref={ref} className="event">
+            <div ref={ref} className="event">
               <FeedEvent {...props} />
             </div>
           );
@@ -67,6 +67,7 @@ export const ChatFeed = (props: Props) => {
 
         return (
           <FeedEventWithRef
+            key={id}
             ref={lastCommentRef}
             bodyText={bodyText}
             createdAt={createdAt}

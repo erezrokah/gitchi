@@ -72,6 +72,111 @@ export const getCurrentUser = async () => {
   }
 };
 
+export const parseLinkHeader = (link: string) => {
+  const links = link.split(',').map(l => {
+    const parts = l.split(';');
+
+    const link = (parts[0] || '').trim().match(/<(.*?)>/);
+    const rel = (parts[1] || '').match(/rel="(.*?)"/);
+
+    return {
+      link: link ? link[1] : '',
+      rel: rel ? rel[1] : '',
+    };
+  });
+
+  const result: Record<string, string> = {};
+
+  links.forEach(({ rel, link }) => {
+    result[rel] = link;
+  });
+
+  return result;
+};
+
+const getAllResponses = async (url: string, options: RequestInit) => {
+  const maxResponses = 30;
+  let responseCount = 1;
+
+  const pageResponses = [];
+
+  let nextURL = url;
+
+  while (responseCount < maxResponses) {
+    const pageResponse = await fetch(nextURL, options);
+    pageResponses.push(pageResponse);
+    responseCount++;
+
+    const linkHeader = pageResponse.headers.get('Link');
+    const next = linkHeader && parseLinkHeader(linkHeader)['next'];
+    if (next) {
+      nextURL = next;
+    } else {
+      break;
+    }
+  }
+
+  const jsons = await Promise.all(pageResponses.map(r => r.json()));
+
+  return jsons.flat();
+};
+
+export const getReviewComments = async (
+  repoOwner: string,
+  repoName: string,
+  prNumber: number,
+) => {
+  const token = await getToken();
+
+  const result = await getAllResponses(
+    `https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${prNumber}/comments`,
+    {
+      headers: {
+        authorization: `token ${token}`,
+      },
+    },
+  );
+
+  const byReviewId: Record<
+    string,
+    { key: string; title: string; comments: unknown[] }
+  > = {};
+
+  result.forEach(
+    ({
+      body: bodyText,
+      id,
+      created_at: createdAt,
+      in_reply_to_id: inReplyToId,
+      user,
+    }) => {
+      const comment = {
+        bodyText,
+        createdAt,
+        id,
+        inReplyToId,
+        author: {
+          avatarUrl: user.avatar_url,
+          login: user.login,
+        },
+      };
+      id = `${id}`;
+
+      if (inReplyToId && byReviewId[inReplyToId]) {
+        byReviewId[inReplyToId].comments.push(comment);
+      } else {
+        byReviewId[id] = {
+          key: id,
+          title: id,
+          comments: [comment],
+        };
+      }
+    },
+  );
+
+  return Object.values(byReviewId);
+};
+
 export const getPullRequest = async (
   repoOwner: string,
   repoName: string,
@@ -82,6 +187,8 @@ export const getPullRequest = async (
     query: queries.pullRequest,
     variables: { repoOwner, repoName, prNumber },
   });
+
+  const reviewComments = await getReviewComments(repoOwner, repoName, prNumber);
 
   const { pullRequest } = data.repository;
   const { bodyText, createdAt, author, id } = pullRequest;
@@ -94,6 +201,7 @@ export const getPullRequest = async (
         title: 'Main',
         comments: [{ bodyText, createdAt, author, id }, ...comments],
       },
+      ...reviewComments,
     ],
   };
 };
