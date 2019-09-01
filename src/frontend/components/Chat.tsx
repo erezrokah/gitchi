@@ -11,6 +11,7 @@ import { ChatMenu as Menu } from './ChatMenu';
 import { ChatFeed as Feed } from './ChatFeed';
 import { Auth } from './Auth';
 import { MessageBox } from './MessageBox';
+import { getWebSocketUrl } from '../utils/webSocket';
 
 interface State {
   collapsed: boolean;
@@ -150,49 +151,52 @@ const useGetPullRequestEffect = (
   }, [user, dispatch]);
 };
 
-const useWebSocketEffect = (user: User | undefined, dispatch: Dispatch) => {
+const useWebSocketEffect = (
+  user: User | undefined,
+  prId: string | undefined,
+  dispatch: Dispatch,
+) => {
   useEffect(() => {
     let timeout: number | null = null;
-    if (user) {
-      const webSocketLink = document.querySelector(
-        'link[rel="web-socket"]',
-      ) as HTMLLinkElement;
+    if (user && prId) {
+      getWebSocketUrl().then(url => {
+        if (url) {
+          const socket = new WebSocket(url);
 
-      if (webSocketLink) {
-        const socket = new WebSocket(webSocketLink.href);
+          socket.addEventListener('open', () => {
+            console.log('GitHub WebSocket open');
+            socket.send(`subscribe:pull_request:${prId}`);
+          });
 
-        socket.addEventListener('open', () => {
-          console.log('GitHub WebSocket open');
-        });
+          socket.addEventListener('close', () => {
+            console.log('GitHub WebSocket close');
+          });
 
-        socket.addEventListener('close', () => {
-          console.log('GitHub WebSocket close');
-        });
-
-        // Listen for messages
-        socket.addEventListener('message', function(event) {
-          try {
-            const data = JSON.parse(event.data);
-            if (data[0] && data[0].startsWith('pull_request:')) {
-              const pr = {
-                id: data[0].split(':')[1] || '',
-                ...data[1],
-              };
-              console.log('GitHub Pull Request Updated', pr);
-              timeout = setTimeout(() => fetchPullRequest(dispatch), pr.wait);
+          // Listen for messages
+          socket.addEventListener('message', function(event) {
+            try {
+              const data = JSON.parse(event.data);
+              if (data[0] && data[0].startsWith('pull_request:')) {
+                const pr = {
+                  id: data[0].split(':')[1] || '',
+                  ...data[1],
+                };
+                console.log('GitHub Pull Request Updated', pr);
+                timeout = setTimeout(() => fetchPullRequest(dispatch), pr.wait);
+              }
+            } catch (e) {
+              console.log('error', e);
             }
-          } catch (e) {
-            console.log('error', e);
-          }
-        });
-      }
+          });
+        }
+      });
     }
     if (timeout) {
       return () => clearTimeout(timeout as number);
     } else {
       return () => {};
     }
-  }, [user, dispatch]);
+  }, [user, prId, dispatch]);
 };
 
 export const Chat = () => {
@@ -200,7 +204,7 @@ export const Chat = () => {
 
   useGetCurrentUserEffect(dispatch);
   useGetPullRequestEffect(state.user, dispatch);
-  useWebSocketEffect(state.user, dispatch);
+  useWebSocketEffect(state.user, state.pr ? state.pr.id : '', dispatch);
 
   const toggleMenu = (collapsed: boolean) => {
     dispatch({
