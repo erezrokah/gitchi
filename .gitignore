@@ -6,3 +6,6 @@ tmp/
 .serverless
 .webpack
 .eslintcache
+junit.xml
+coverage/
+reports/

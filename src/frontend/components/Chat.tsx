@@ -102,7 +102,7 @@ export const fetchCurrentUser = (dispatch: Dispatch) => {
   };
 };
 
-const parseLocation = () => {
+export const parseLocation = () => {
   const match = window.location.href.match(
     /https:\/\/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/,
   );

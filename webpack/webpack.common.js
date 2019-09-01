@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const fs = require('fs');
 const dotenv = require('dotenv').config({
   path: path.join(__dirname, '..', 'src', 'frontend', '.env'),
 });
@@ -49,7 +50,26 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
-    new CopyPlugin([{ from: './public', to: './' }]),
+    new CopyPlugin([
+      {
+        from: './public',
+        to: './',
+        transform: (content, filePath) => {
+          if (
+            path.resolve(path.join('./public', 'manifest.json')) === filePath
+          ) {
+            const { version } = JSON.parse(
+              fs.readFileSync(path.join(__dirname, '..', 'package.json')),
+            );
+
+            content = JSON.parse(content.toString());
+            content.version = version;
+            return JSON.stringify(content, null, 2);
+          }
+          return content;
+        },
+      },
+    ]),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(dotenv.parsed),
     }),

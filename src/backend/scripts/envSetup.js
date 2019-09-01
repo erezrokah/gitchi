@@ -2,7 +2,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
 const yaml = require('js-yaml');
-require('dotenv').config();
+require('dotenv').config({
+  path: path.join(__dirname, '..', '..', '..', '.env'),
+});
 
 const getStackOutputs = async provider => {
   const yamlContent = await fs.readFile(`serverless.yml`);
