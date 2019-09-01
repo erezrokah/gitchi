@@ -68,7 +68,7 @@ aliases:
 
   - &store_test_results
     store_test_results:
-      path: jest/reports
+      path: reports/junit
 
 jobs:
   test:
