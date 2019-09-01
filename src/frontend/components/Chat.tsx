@@ -74,12 +74,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-type GetCurrentUserType = typeof getCurrentUser;
-
-export const useGetCurrentUserCallback = (
-  getCurrentUser: GetCurrentUserType,
-  dispatch: Dispatch,
-) => {
+export const fetchCurrentUser = (dispatch: Dispatch) => {
   let isSubscribed = true;
   getCurrentUser()
     .then(user => {
@@ -107,8 +102,6 @@ export const useGetCurrentUserCallback = (
   };
 };
 
-type GetPullRequestType = typeof getPullRequest;
-
 const parseLocation = () => {
   const match = window.location.href.match(
     /https:\/\/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/,
@@ -121,10 +114,7 @@ const parseLocation = () => {
   }
 };
 
-export const useGetPullRequestCallback = (
-  getPullRequest: GetPullRequestType,
-  dispatch: Dispatch,
-) => {
+export const fetchPullRequest = (dispatch: Dispatch) => {
   let isSubscribed = true;
   const parsed = parseLocation();
   if (parsed) {
@@ -145,9 +135,7 @@ export const useGetPullRequestCallback = (
 };
 
 const useGetCurrentUserEffect = (dispatch: Dispatch) => {
-  useEffect(() => useGetCurrentUserCallback(getCurrentUser, dispatch), [
-    dispatch,
-  ]);
+  useEffect(() => fetchCurrentUser(dispatch), [dispatch]);
 };
 
 const useGetPullRequestEffect = (
@@ -156,13 +144,15 @@ const useGetPullRequestEffect = (
 ) => {
   useEffect(() => {
     if (user) {
-      useGetPullRequestCallback(getPullRequest, dispatch);
+      return fetchPullRequest(dispatch);
     }
+    return () => {};
   }, [user, dispatch]);
 };
 
 const useWebSocketEffect = (user: User | undefined, dispatch: Dispatch) => {
   useEffect(() => {
+    let timeout: number | null = null;
     if (user) {
       const webSocketLink = document.querySelector(
         'link[rel="web-socket"]',
@@ -189,16 +179,18 @@ const useWebSocketEffect = (user: User | undefined, dispatch: Dispatch) => {
                 ...data[1],
               };
               console.log('GitHub Pull Request Updated', pr);
-              setTimeout(
-                () => useGetPullRequestCallback(getPullRequest, dispatch),
-                pr.wait,
-              );
+              timeout = setTimeout(() => fetchPullRequest(dispatch), pr.wait);
             }
           } catch (e) {
             console.log('error', e);
           }
         });
       }
+    }
+    if (timeout) {
+      return () => clearTimeout(timeout as number);
+    } else {
+      return () => {};
     }
   }, [user, dispatch]);
 };
@@ -222,6 +214,10 @@ export const Chat = () => {
       type: ActionType.CHANNEL_SELECTED,
       payload: key,
     });
+  };
+
+  const refreshData = () => {
+    fetchPullRequest(dispatch);
   };
 
   const onAuthSuccess = async () => {
@@ -283,6 +279,7 @@ export const Chat = () => {
         onMenuToggle={toggleMenu}
         onChannelSelect={selectChannel}
         channels={pr.channels}
+        onRefreshClicked={refreshData}
       />
       {collapsed ? null : (
         <Feed comments={comments} onDeleteMessage={onDeleteMessage} />

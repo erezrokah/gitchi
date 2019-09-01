@@ -12,11 +12,11 @@ const getToken = async () => {
 
 const API_ENDPOINT = 'https://api.github.com/';
 
-const get = async (path: string) => {
+const get = async (path: string, query = '') => {
   const token = await getToken();
   const url = path.startsWith(API_ENDPOINT)
     ? path
-    : `${API_ENDPOINT}${path}?timestamp=${Date.now()}`;
+    : `${API_ENDPOINT}${path}?${query}&timestamp=${Date.now()}`;
   const response = await fetch(url, {
     headers: {
       authorization: `token ${token}`,
@@ -93,10 +93,11 @@ const getAllResponses = async (url: string) => {
 
   const pageResponses = [];
 
+  let query = `per_page=100`;
   let nextURL = url;
 
   while (responseCount < maxResponses) {
-    const pageResponse = await get(nextURL);
+    const pageResponse = await get(nextURL, query);
     pageResponses.push(pageResponse);
     responseCount++;
 
@@ -104,6 +105,7 @@ const getAllResponses = async (url: string) => {
     const next = linkHeader && parseLinkHeader(linkHeader)['next'];
     if (next) {
       nextURL = next;
+      query = '';
     } else {
       break;
     }

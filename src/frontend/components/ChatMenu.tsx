@@ -14,12 +14,13 @@ const StyledItem = styled(Menu.Item)`
 
 interface Props {
   onMenuToggle: (collapsed: boolean) => void;
+  onRefreshClicked: () => void;
   onChannelSelect: (key: string) => void;
   channels: Channel[];
 }
 
 export const ChatMenu = (props: Props) => {
-  const { onMenuToggle, onChannelSelect } = props;
+  const { onMenuToggle, onChannelSelect, onRefreshClicked } = props;
 
   const [active, setActive] = useState(props.channels[0].key);
   const [collapsed, setCollapsed] = useState(false);
@@ -95,6 +96,16 @@ export const ChatMenu = (props: Props) => {
     menus.push(
       <Menu tabular attached="top" key={index}>
         {part}
+        {index + itemsPerRow >= items.length ? (
+          <Menu.Item
+            name="refresh"
+            active={false}
+            onClick={onRefreshClicked}
+            title="Refresh"
+          >
+            <Icon name="refresh" />
+          </Menu.Item>
+        ) : null}
         {index === 0 ? collapseButton : null}
       </Menu>,
     );
