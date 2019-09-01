@@ -63,8 +63,7 @@ aliases:
 
   - &store_artifacts
     store_artifacts:
-      path: ~/repo/dist/package
-      destination: package
+      path: ~/repo/package
 
   - &store_test_results
     store_test_results:

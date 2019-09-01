@@ -9,3 +9,4 @@ tmp/
 junit.xml
 coverage/
 reports/
+package/
