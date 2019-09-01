@@ -1,0 +1,147 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
+
+aliases:
+  - &container_config
+    docker:
+      - image: circleci/node:dubnium-browsers
+
+    working_directory: ~/repo
+
+  - &checkout checkout
+
+  - &deploy_prod_filters
+    filters:
+      branches:
+        only: master
+
+  - &save_cache
+    save_cache:
+      paths:
+        - node_modules
+      key: dependencies-cache-v1-{{ checksum "yarn.lock" }}
+
+  - &restore_cache
+    restore_cache:
+      keys:
+        - dependencies-cache-v1-{{ checksum "yarn.lock" }}
+        - dependencies-cache-v1
+
+  - &install_serverless_cli
+    run:
+      name: Install Serverless CLI
+      command: sudo npm i -g serverless
+
+  - &configure_aws_cli
+    aws-cli/configure:
+      profile-name: default
+      aws-access-key-id: AWS_ACCESS_KEY_ID
+      aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      configure-default-region: false
+
+  - &install_serverless_cli
+    run:
+      name: Install Serverless CLI
+      command: sudo npm i -g serverless
+
+  - &run_deploy
+    run:
+      name: Run Deploy
+      command: yarn deploy --stage $STAGE
+
+  - &run_build
+    run:
+      name: Run Build
+      command: yarn build
+
+  - &run_package
+    run:
+      name: Run Package
+      command: yarn run package
+
+  - &store_artifacts
+    store_artifacts:
+      path: ~/repo/dist/package
+      destination: package
+
+  - &store_test_results
+    store_test_results:
+      path: jest/reports
+
+jobs:
+  test:
+    <<: *container_config
+    steps:
+      - *checkout
+      - *restore_cache
+      - run:
+          name: Install dependencies
+          command: yarn install --frozen-lockfile
+      - *save_cache
+      - run:
+          name: Run linter
+          command: yarn lint
+      - run:
+          name: Run code formatter
+          command: yarn prettier:ci
+      - run:
+          name: Run tests
+          command: yarn test:ci
+      - *store_test_results
+
+  deploy-staging:
+    <<: *container_config
+    steps:
+      - *checkout
+      - *restore_cache
+      - *install_serverless_cli
+      - aws-cli/install
+      - *run_deploy
+      - *run_build
+      - *run_package
+      - *store_artifacts
+
+    environment:
+      STAGE: staging
+
+  deploy-prod:
+    <<: *container_config
+    steps:
+      - *checkout
+      - *restore_cache
+      - *install_serverless_cli
+      - aws-cli/install
+      - *run_deploy
+      - *run_build
+      - *run_package
+      - *store_artifacts
+
+    environment:
+      STAGE: prod
+
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+
+      - deploy-staging:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+
+      - deploy-prod:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

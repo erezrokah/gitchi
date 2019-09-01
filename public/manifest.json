@@ -3,7 +3,6 @@
 
   "name": "Gitchi",
   "description": "Turns GitHub Pull Request Comments to a Chat",
-  "version": "1.0",
 
   "icons": {
     "16": "G16.png",
