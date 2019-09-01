@@ -98,6 +98,11 @@ jobs:
       - *restore_cache
       - *install_serverless_cli
       - aws-cli/install
+      - run:
+          name: Define Staging Environment Variables
+          command: |
+            echo "STAGING_OAUTH_CLIENT_ID=$STAGING_OAUTH_CLIENT_ID" >> .env
+            echo "STAGING_OAUTH_CLIENT_SECRET=$STAGING_OAUTH_CLIENT_SECRET" >> .env
       - *run_deploy
       - *run_build
       - *run_package
@@ -113,6 +118,11 @@ jobs:
       - *restore_cache
       - *install_serverless_cli
       - aws-cli/install
+      - run:
+          name: Define Prod Environment Variables
+          command: |
+            echo "PROD_OAUTH_CLIENT_ID=$PROD_OAUTH_CLIENT_ID" >> .env
+            echo "PROD_OAUTH_CLIENT_SECRET=$PROD_OAUTH_CLIENT_SECRET" >> .env
       - *run_deploy
       - *run_build
       - *run_package
