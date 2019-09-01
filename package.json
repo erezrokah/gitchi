@@ -20,7 +20,8 @@
     "prettier:ci": "prettier --list-different \"{src,backend}/**/*.{js,jsx,ts,scss}\" *.js",
     "package": "cd dist && mkdir -p package && zip -r package/${npm_package_name}.${npm_package_version}.zip .",
     "circleci:setup": "node .circleci/circleci.js setup",
-    "circleci:remove": "node .circleci/circleci.js remove"
+    "circleci:remove": "node .circleci/circleci.js remove",
+    "tag": "git tag -a \"v$npm_package_version\" -m \"Releasing version v$npm_package_version\" && git push --tags"
   },
   "author": "Erez Rokah (erez@erezro.com)",
   "license": "MIT",
