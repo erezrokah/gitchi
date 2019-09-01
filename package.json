@@ -1,7 +1,7 @@
 {
   "name": "gitchi",
   "version": "0.0.1",
-  "description": "Turns GitHub Pull Request Comments into a Chat",
+  "description": "Turn GitHub Pull Request Comments into a Chat",
   "private": true,
   "scripts": {
     "watch": "yarn clean && webpack --config webpack/webpack.dev.js --watch",

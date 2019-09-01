@@ -58,12 +58,14 @@ module.exports = {
           if (
             path.resolve(path.join('./public', 'manifest.json')) === filePath
           ) {
-            const { version } = JSON.parse(
+            const { version, description } = JSON.parse(
               fs.readFileSync(path.join(__dirname, '..', 'package.json')),
             );
 
             content = JSON.parse(content.toString());
             content.version = version;
+            content.description = description;
+
             return JSON.stringify(content, null, 2);
           }
           return content;

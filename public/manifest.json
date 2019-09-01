@@ -2,7 +2,6 @@
   "manifest_version": 2,
 
   "name": "Gitchi",
-  "description": "Turns GitHub Pull Request Comments to a Chat",
 
   "icons": {
     "16": "G16.png",
