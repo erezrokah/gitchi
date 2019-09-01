@@ -1,6 +1,6 @@
 {
   "name": "gitchi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Turn GitHub Pull Request Comments into a Chat",
   "private": true,
   "scripts": {
