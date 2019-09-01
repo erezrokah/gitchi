@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "crypto-random-string": "^3.0.1",
+    "date-fns": "^2.0.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "semantic-ui-css": "^2.4.1",

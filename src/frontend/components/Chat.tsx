@@ -5,6 +5,7 @@ import {
   getPullRequest,
   AuthorizationError,
   createPullRequestComment,
+  deletePullRequestComment,
 } from '../lib/github';
 import { ChatMenu as Menu } from './ChatMenu';
 import { ChatFeed as Feed } from './ChatFeed';
@@ -246,7 +247,7 @@ export const Chat = () => {
   const { collapsed, pr, channel } = state;
 
   const activeChannel = channel
-    ? pr.channels.find(c => c.key === channel)
+    ? pr.channels.find(c => c.key === channel) || pr.channels[0]
     : pr.channels[0];
 
   const onSendMessage = async (message: string) => {
@@ -265,6 +266,15 @@ export const Chat = () => {
     }
   };
 
+  const onDeleteMessage = async (id: string) => {
+    const parsed = parseLocation();
+    if (parsed && activeChannel) {
+      const { owner, repo } = parsed;
+      const { isReview } = activeChannel;
+      await deletePullRequestComment(owner, repo, isReview, id);
+    }
+  };
+
   const comments = activeChannel ? activeChannel.comments : [];
 
   return (
@@ -274,7 +284,9 @@ export const Chat = () => {
         onChannelSelect={selectChannel}
         channels={pr.channels}
       />
-      {collapsed ? null : <Feed comments={comments} />}
+      {collapsed ? null : (
+        <Feed comments={comments} onDeleteMessage={onDeleteMessage} />
+      )}
       {collapsed ? null : <MessageBox onSendMessage={onSendMessage} />}
     </div>
   );

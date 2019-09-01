@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useRef, useState } from 'react';
 import cryptoRandomString = require('crypto-random-string');
 import { Segment, Button, Message } from 'semantic-ui-react';
+import * as storage from '../utils/storage';
 
 const encodeQueryData = (data: Record<string, string>) => {
   const args = [];
@@ -13,13 +14,6 @@ const encodeQueryData = (data: Record<string, string>) => {
 
 const authEndpoint = process.env.REACT_APP_AUTH_ENDPOINT || '';
 const origin = authEndpoint.substring(0, authEndpoint.lastIndexOf('/'));
-
-const url = `https://github.com/login/oauth/authorize?${encodeQueryData({
-  client_id: process.env.REACT_APP_OAUTH_CLIENT_ID || '',
-  state: cryptoRandomString({ length: 32, type: 'url-safe' }),
-  allow_signup: `${false}`,
-  scope: 'public_repo',
-})}`;
 
 interface Data {
   token: string;
@@ -54,7 +48,7 @@ export const Auth = ({ onAuthSuccess }: Props) => {
       setError(error);
     } else {
       const { token } = data;
-      chrome.storage.sync.set({ token }, () => onAuthSuccess());
+      storage.set({ token }).then(() => onAuthSuccess());
     }
   };
 
@@ -115,6 +109,13 @@ export const Auth = ({ onAuthSuccess }: Props) => {
     const top = screen.height / 2 - height / 2;
 
     window.addEventListener('message', handshakeCallback(), false);
+
+    const url = `https://github.com/login/oauth/authorize?${encodeQueryData({
+      client_id: process.env.REACT_APP_OAUTH_CLIENT_ID || '',
+      state: cryptoRandomString({ length: 32, type: 'url-safe' }),
+      allow_signup: `${false}`,
+      scope: 'public_repo',
+    })}`;
 
     const authWindow = window.open(
       url,

@@ -1,21 +1,13 @@
+import * as storage from '../utils/storage';
 export class AuthorizationError extends Error {}
 
 const getToken = async () => {
-  const tokenPromise: Promise<Record<string, string>> = new Promise(
-    (resolve, reject) => {
-      chrome.storage.sync.get(['token'], ({ token }) => {
-        if (token) {
-          resolve(token);
-        } else {
-          reject(new AuthorizationError());
-        }
-      });
-    },
-  );
-
-  const token = await tokenPromise;
-
-  return token;
+  const token = await storage.get('token');
+  if (token) {
+    return token;
+  } else {
+    throw new AuthorizationError();
+  }
 };
 
 const API_ENDPOINT = 'https://api.github.com/';
@@ -54,9 +46,22 @@ const post = async (path: string, data = {}) => {
   return response;
 };
 
+const del = async (path: string) => {
+  const token = await getToken();
+  const url = `${API_ENDPOINT}${path}`;
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      authorization: `token ${token}`,
+    },
+  });
+  return response;
+};
+
 export const getCurrentUser = async () => {
   const user = await get('user');
   const { avatar_url: avatarUrl, login, name } = await user.json();
+  await storage.set({ login });
   return { avatarUrl, login, name };
 };
 
@@ -127,6 +132,7 @@ export const getReviewComments = async (
   owner: string,
   repo: string,
   prNumber: number,
+  login: string,
 ) => {
   const result = await getAllResponses(
     `repos/${owner}/${repo}/pulls/${prNumber}/comments`,
@@ -146,9 +152,10 @@ export const getReviewComments = async (
       const idStr = `${id}`;
       const comment = {
         bodyText,
-        createdAt,
+        createdAt: new Date(createdAt),
         id: idStr,
         inReplyToId,
+        canDelete: login === user.login,
         author: {
           avatarUrl: user.avatar_url,
           login: user.login,
@@ -176,19 +183,21 @@ export const getPullRequest = async (
   repo: string,
   prNumber: number,
 ): Promise<Pr> => {
+  const login = await storage.get('login');
   const [pullRequest, commentsData, reviewComments] = await Promise.all([
     get(`repos/${owner}/${repo}/pulls/${prNumber}`).then(r => r.json()),
     get(`repos/${owner}/${repo}/issues/${prNumber}/comments`).then(r =>
       r.json(),
     ),
-    getReviewComments(owner, repo, prNumber),
+    getReviewComments(owner, repo, prNumber, login),
   ]);
 
   const comments = commentsData.map(
     ({ id, body: bodyText, user, created_at: createdAt }: IssueComment) => ({
       bodyText,
-      createdAt,
+      createdAt: new Date(createdAt),
       id: `${id}`,
+      canDelete: login === user.login,
       author: {
         avatarUrl: user.avatar_url,
         login: user.login,
@@ -200,6 +209,7 @@ export const getPullRequest = async (
     id: `${pullRequest.id}`,
     bodyText: pullRequest.body,
     title: pullRequest.title,
+    createdAt: new Date(pullRequest.created_at),
     author: {
       avatarUrl: pullRequest.user.avatar_url,
       login: pullRequest.user.login,
@@ -213,7 +223,7 @@ export const getPullRequest = async (
         key: pr.id,
         title: 'Main',
         isReview: false,
-        comments: [pr, ...comments],
+        comments: [{ ...pr, canDelete: false }, ...comments],
       },
       ...reviewComments,
     ],
@@ -231,16 +241,24 @@ export const createPullRequestComment = async (
   commentId: string,
 ) => {
   if (isReview) {
-    const result = await post(
+    await post(
       `repos/${owner}/${repo}/pulls/${prNumber}/comments/${commentId}/replies`,
       { body },
     );
-    console.log(await result.json());
   } else {
-    const result = await post(
-      `repos/${owner}/${repo}/issues/${prNumber}/comments`,
-      { body },
-    );
-    console.log(await result.json());
+    await post(`repos/${owner}/${repo}/issues/${prNumber}/comments`, { body });
+  }
+};
+
+export const deletePullRequestComment = async (
+  owner: string,
+  repo: string,
+  isReview: boolean,
+  commentId: string,
+) => {
+  if (isReview) {
+    await del(`repos/${owner}/${repo}/pulls/comments/${commentId}`);
+  } else {
+    await del(`repos/${owner}/${repo}/issues/comments/${commentId}`);
   }
 };

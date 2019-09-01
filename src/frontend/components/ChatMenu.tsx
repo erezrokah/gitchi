@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, MenuItemProps, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
 
@@ -40,6 +40,14 @@ export const ChatMenu = (props: Props) => {
       toggleCollapse();
     }
   };
+
+  // reset active if channel is removed
+  useEffect(() => {
+    if (!props.channels.some(c => c.key === active)) {
+      setActive(props.channels[0].key);
+    }
+    return () => {};
+  }, [props.channels, active]);
 
   const items = props.channels.map(({ key, title }) => {
     return (

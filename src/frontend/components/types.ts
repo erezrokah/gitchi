@@ -14,6 +14,7 @@ interface Comment {
   author: Author;
   inReplyToId?: number;
   path?: string;
+  canDelete: boolean;
 }
 
 interface Channel {
