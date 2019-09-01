@@ -4,7 +4,7 @@ chrome.runtime.onInstalled.addListener(() => {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostEquals: 'github.com' },
+            pageUrl: { urlMatches: 'https://github.com/*/pull/*' },
           }),
         ],
         actions: [new chrome.declarativeContent.ShowPageAction()],

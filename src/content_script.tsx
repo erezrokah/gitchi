@@ -5,17 +5,6 @@ import './content_script.css';
 
 const tabs = document.querySelector('[class="tabnav-tabs"]');
 if (tabs) {
-  const buttonId = 'gitchi-chat-button';
-  const chatButton = document.createElement('a');
-  chatButton.setAttribute('id', buttonId);
-  chatButton.setAttribute('href', '#');
-  chatButton.setAttribute('class', 'tabnav-tab js-pjax-history-navigate');
-  tabs.appendChild(chatButton);
-
-  import('./frontend/components/OpenChatButton').then(({ OpenChatButton }) => {
-    ReactDOM.render(<OpenChatButton />, document.getElementById(buttonId));
-  });
-
   const chatId = 'gitchi-chat';
   const chat = document.createElement('div');
   chat.setAttribute('id', chatId);
