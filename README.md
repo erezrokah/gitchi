@@ -2,6 +2,8 @@
 
 Turns GitHub Pull Request Comments into a Chat
 
+![alt Demo](Demo.gif 'Demo')
+
 ## Prerequisites
 
 - [node + npm](https://nodejs.org/) (>=10)
