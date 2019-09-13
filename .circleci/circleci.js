@@ -1,5 +1,4 @@
 // https://circleci.com/account/api
-const yaml = require('js-yaml');
 const fs = require('fs-extra');
 const path = require('path');
 const yargs = require('yargs');
