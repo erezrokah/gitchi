@@ -1,0 +1,341 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Chat Chat should match snapshot channel is selected 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+.c1 {
+  height: 500px;
+  width: 500px;
+  overflow: auto;
+}
+
+.c2 {
+  min-width: 400px;
+}
+
+<div>
+    <div>
+      <div
+        class="ui top attached tabular menu"
+      >
+        <a
+          class="item c0"
+          title="Main"
+        >
+          Main
+        </a>
+        <a
+          class="active item c0"
+          title="Channel 2"
+        >
+          Channel 2
+        </a>
+        <a
+          class="item"
+          title="Refresh"
+        >
+          <i
+            aria-hidden="true"
+            class="refresh icon"
+          />
+        </a>
+        <a
+          class="right item"
+          title="Collapse"
+        >
+          <i
+            aria-hidden="true"
+            class="arrow down icon"
+          />
+          Collapse
+        </a>
+      </div>
+    </div>
+    <div
+      class="ui bottom attached segment c1"
+    >
+      <div
+        class="ui feed"
+      >
+        <div
+          class="event"
+        >
+          <div
+            class="label"
+          >
+            <img
+              class="ui image"
+              src="avatarUrl"
+            />
+          </div>
+          <div
+            class="content"
+          >
+            <div
+              class="summary"
+            >
+              <a
+                class="user"
+              >
+                login
+              </a>
+              <div
+                class="text extra"
+              >
+                comment 200
+              </div>
+              <div
+                class="date"
+              >
+                01/01/1970
+              </div>
+            </div>
+            <div
+              class="meta"
+            >
+              <a
+                class="like"
+              >
+                <i
+                  aria-hidden="true"
+                  class="delete icon"
+                  data-testid="delete-comment-200"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="ui fluid action input c2"
+    >
+      <input
+        name="message"
+        placeholder="Message..."
+        type="text"
+        value=""
+      />
+      <button
+        class="ui icon primary button"
+        data-testid="sendMessageButton"
+        title="Send Message"
+      >
+        <i
+          aria-hidden="true"
+          class="send icon"
+        />
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Chat Chat should match snapshot when collapsed 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+<div>
+    <div>
+      <div
+        class="ui top attached tabular menu"
+      >
+        <a
+          class="active item c0"
+          title="Main"
+        >
+          Main
+        </a>
+        <a
+          class="item c0"
+          title="Channel 2"
+        >
+          Channel 2
+        </a>
+        <a
+          class="item"
+          title="Refresh"
+        >
+          <i
+            aria-hidden="true"
+            class="refresh icon"
+          />
+        </a>
+        <a
+          class="right item"
+          title="Open"
+        >
+          <i
+            aria-hidden="true"
+            class="arrow up icon"
+          />
+          Open
+        </a>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Chat Chat should match snapshot when loading 1`] = `
+<DocumentFragment>
+  <div />
+</DocumentFragment>
+`;
+
+exports[`Chat Chat should match snapshot when not loading, authenticated but no pr 1`] = `
+<DocumentFragment>
+  <div />
+</DocumentFragment>
+`;
+
+exports[`Chat Chat should match snapshot when not loading, authenticated with pr 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+.c1 {
+  height: 500px;
+  width: 500px;
+  overflow: auto;
+}
+
+.c2 {
+  min-width: 400px;
+}
+
+<div>
+    <div>
+      <div
+        class="ui top attached tabular menu"
+      >
+        <a
+          class="active item c0"
+          title="Main"
+        >
+          Main
+        </a>
+        <a
+          class="item c0"
+          title="Channel 2"
+        >
+          Channel 2
+        </a>
+        <a
+          class="item"
+          title="Refresh"
+        >
+          <i
+            aria-hidden="true"
+            class="refresh icon"
+          />
+        </a>
+        <a
+          class="right item"
+          title="Collapse"
+        >
+          <i
+            aria-hidden="true"
+            class="arrow down icon"
+          />
+          Collapse
+        </a>
+      </div>
+    </div>
+    <div
+      class="ui bottom attached segment c1"
+    >
+      <div
+        class="ui feed"
+      >
+        <div
+          class="event"
+        >
+          <div
+            class="label"
+          >
+            <img
+              class="ui image"
+              src="authorAvatarUrl"
+            />
+          </div>
+          <div
+            class="content"
+          >
+            <div
+              class="summary"
+            >
+              <a
+                class="user"
+              >
+                authorLogin
+              </a>
+              <div
+                class="text extra"
+              >
+                comment 100
+              </div>
+              <div
+                class="date"
+              >
+                01/01/1970
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="ui fluid action input c2"
+    >
+      <input
+        name="message"
+        placeholder="Message..."
+        type="text"
+        value=""
+      />
+      <button
+        class="ui icon primary button"
+        data-testid="sendMessageButton"
+        title="Send Message"
+      >
+        <i
+          aria-hidden="true"
+          class="send icon"
+        />
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Chat Chat should match snapshot when not loading, but unauthenticated 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="mocked-auth-component"
+  >
+    Auth
+  </div>
+</DocumentFragment>
+`;

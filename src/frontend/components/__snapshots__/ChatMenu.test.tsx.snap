@@ -1,0 +1,220 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChatMenu should collapse/open menu on button clicks 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+<div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="active item c0"
+        title="Main"
+      >
+        Main
+      </a>
+      <a
+        class="item c0"
+        title="Channel1"
+      >
+        Channel1
+      </a>
+      <a
+        class="item c0"
+        title="Channel2"
+      >
+        Channel2
+      </a>
+      <a
+        class="item c0"
+        title="Channel3"
+      >
+        Channel3
+      </a>
+      <a
+        class="right item"
+        title="Open"
+      >
+        <i
+          aria-hidden="true"
+          class="arrow up icon"
+        />
+        Open
+      </a>
+    </div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="item c0"
+        title="Channel4"
+      >
+        Channel4
+      </a>
+      <a
+        class="item"
+        title="Refresh"
+      >
+        <i
+          aria-hidden="true"
+          class="refresh icon"
+        />
+      </a>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ChatMenu should match snapshot 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+<div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="active item c0"
+        title="Main"
+      >
+        Main
+      </a>
+      <a
+        class="item c0"
+        title="Channel1"
+      >
+        Channel1
+      </a>
+      <a
+        class="item c0"
+        title="Channel2"
+      >
+        Channel2
+      </a>
+      <a
+        class="item c0"
+        title="Channel3"
+      >
+        Channel3
+      </a>
+      <a
+        class="right item"
+        title="Collapse"
+      >
+        <i
+          aria-hidden="true"
+          class="arrow down icon"
+        />
+        Collapse
+      </a>
+    </div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="item c0"
+        title="Channel4"
+      >
+        Channel4
+      </a>
+      <a
+        class="item"
+        title="Refresh"
+      >
+        <i
+          aria-hidden="true"
+          class="refresh icon"
+        />
+      </a>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ChatMenu should open collapsed menu on menu item click 1`] = `
+<DocumentFragment>
+  .c0 {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  display: block !important;
+}
+
+<div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="active item c0"
+        title="Main"
+      >
+        Main
+      </a>
+      <a
+        class="item c0"
+        title="Channel1"
+      >
+        Channel1
+      </a>
+      <a
+        class="item c0"
+        title="Channel2"
+      >
+        Channel2
+      </a>
+      <a
+        class="item c0"
+        title="Channel3"
+      >
+        Channel3
+      </a>
+      <a
+        class="right item"
+        title="Collapse"
+      >
+        <i
+          aria-hidden="true"
+          class="arrow down icon"
+        />
+        Collapse
+      </a>
+    </div>
+    <div
+      class="ui top attached tabular menu"
+    >
+      <a
+        class="item c0"
+        title="Channel4"
+      >
+        Channel4
+      </a>
+      <a
+        class="item"
+        title="Refresh"
+      >
+        <i
+          aria-hidden="true"
+          class="refresh icon"
+        />
+      </a>
+    </div>
+  </div>
+</DocumentFragment>
+`;

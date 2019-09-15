@@ -12,24 +12,24 @@ import { ChatFeed as Feed } from './ChatFeed';
 import { Auth } from './Auth';
 import { MessageBox } from './MessageBox';
 import { getWebSocketUrl } from '../utils/webSocket';
+import { User, Pr, Channel } from './types';
 
 interface State {
   collapsed: boolean;
   loading: boolean;
   user?: User;
   pr?: Pr;
-  channel: string;
+  selectedChannel?: string;
 }
 
 const initialState: State = {
   collapsed: false,
   loading: true,
-  channel: '',
 };
 
 type Payload = boolean | User | Pr | string;
 
-enum ActionType {
+export enum ActionType {
   USER_RECEIVED = 'USER_RECEIVED',
   API_AUTH_ERROR_RECEIVED = 'API_AUTH_ERROR_RECEIVED',
   API_UNKNOWN_ERROR_RECEIVED = 'API_UNKNOWN_ERROR_RECEIVED',
@@ -63,11 +63,22 @@ export const reducer = (state: State, action: Action): State => {
     }
     case ActionType.PR_RECEIVED: {
       const pr = action.payload as Pr;
-      return { ...state, pr };
+      let { selectedChannel } = state;
+
+      if (
+        // initial load
+        !selectedChannel ||
+        // if the channel was removed
+        !pr.channels.some(c => c.key === selectedChannel)
+      ) {
+        selectedChannel = pr.channels[0].key;
+      }
+
+      return { ...state, pr, selectedChannel };
     }
     case ActionType.CHANNEL_SELECTED: {
-      const channel = action.payload as string;
-      return { ...state, channel };
+      const selectedChannel = action.payload as string;
+      return { ...state, selectedChannel };
     }
     default: {
       return state;
@@ -76,15 +87,12 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 export const fetchCurrentUser = (dispatch: Dispatch) => {
-  let isSubscribed = true;
   getCurrentUser()
     .then(user => {
-      if (isSubscribed) {
-        dispatch({
-          type: ActionType.USER_RECEIVED,
-          payload: user,
-        });
-      }
+      dispatch({
+        type: ActionType.USER_RECEIVED,
+        payload: user,
+      });
     })
     .catch(e => {
       if (e instanceof AuthorizationError) {
@@ -97,10 +105,6 @@ export const fetchCurrentUser = (dispatch: Dispatch) => {
         });
       }
     });
-
-  return () => {
-    isSubscribed = false;
-  };
 };
 
 export const parseLocation = () => {
@@ -116,30 +120,23 @@ export const parseLocation = () => {
 };
 
 export const fetchPullRequest = (dispatch: Dispatch) => {
-  let isSubscribed = true;
   const parsed = parseLocation();
   if (parsed) {
     const { owner, repo, prNumber } = parsed;
     getPullRequest(owner, repo, prNumber).then(pr => {
-      if (isSubscribed) {
-        dispatch({
-          payload: pr,
-          type: ActionType.PR_RECEIVED,
-        });
-      }
+      dispatch({
+        payload: pr,
+        type: ActionType.PR_RECEIVED,
+      });
     });
   }
-
-  return () => {
-    isSubscribed = false;
-  };
 };
 
-const useGetCurrentUserEffect = (dispatch: Dispatch) => {
+export const useGetCurrentUserEffect = (dispatch: Dispatch) => {
   useEffect(() => fetchCurrentUser(dispatch), [dispatch]);
 };
 
-const useGetPullRequestEffect = (
+export const useGetPullRequestEffect = (
   user: User | undefined,
   dispatch: Dispatch,
 ) => {
@@ -151,52 +148,92 @@ const useGetPullRequestEffect = (
   }, [user, dispatch]);
 };
 
-const useWebSocketEffect = (
+export const useWebSocketEffect = (
   user: User | undefined,
   prId: string | undefined,
   dispatch: Dispatch,
 ) => {
   useEffect(() => {
     let timeout: number | null = null;
+    let socket: WebSocket | null = null;
+
+    const onOpen = () => {
+      console.log('GitHub WebSocket open');
+      socket && socket.send(`subscribe:pull_request:${prId}`);
+    };
+
+    const onClose = () => {
+      console.log('GitHub WebSocket close');
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data[0] && data[0].startsWith('pull_request:')) {
+          const pr = {
+            id: data[0].split(':')[1] as string,
+            ...data[1],
+          };
+          console.log('GitHub Pull Request Updated', pr);
+          timeout = setTimeout(() => fetchPullRequest(dispatch), pr.wait);
+        }
+      } catch (e) {
+        console.log('error', e);
+      }
+    };
+
     if (user && prId) {
       getWebSocketUrl().then(url => {
         if (url) {
-          const socket = new WebSocket(url);
+          socket = new WebSocket(url);
 
-          socket.addEventListener('open', () => {
-            console.log('GitHub WebSocket open');
-            socket.send(`subscribe:pull_request:${prId}`);
-          });
-
-          socket.addEventListener('close', () => {
-            console.log('GitHub WebSocket close');
-          });
-
-          // Listen for messages
-          socket.addEventListener('message', function(event) {
-            try {
-              const data = JSON.parse(event.data);
-              if (data[0] && data[0].startsWith('pull_request:')) {
-                const pr = {
-                  id: data[0].split(':')[1] || '',
-                  ...data[1],
-                };
-                console.log('GitHub Pull Request Updated', pr);
-                timeout = setTimeout(() => fetchPullRequest(dispatch), pr.wait);
-              }
-            } catch (e) {
-              console.log('error', e);
-            }
-          });
+          socket.addEventListener('open', onOpen);
+          socket.addEventListener('close', onClose);
+          socket.addEventListener('message', onMessage);
         }
       });
     }
-    if (timeout) {
-      return () => clearTimeout(timeout as number);
-    } else {
-      return () => {};
-    }
+
+    return () => {
+      if (socket) {
+        socket.removeEventListener('message', onMessage);
+        socket.removeEventListener('open', onOpen);
+        socket.removeEventListener('close', onClose);
+      }
+      if (timeout) {
+        clearTimeout(timeout as number);
+      }
+    };
   }, [user, prId, dispatch]);
+};
+
+export const onSendMessage = (activeChannel: Channel | undefined) => async (
+  message: string,
+) => {
+  const parsed = parseLocation();
+  if (parsed && activeChannel) {
+    const { owner, repo, prNumber } = parsed;
+    const { isReview, key } = activeChannel;
+    await createPullRequestComment(
+      owner,
+      repo,
+      prNumber,
+      isReview,
+      message,
+      key,
+    );
+  }
+};
+
+export const onDeleteMessage = (activeChannel: Channel | undefined) => async (
+  id: string,
+) => {
+  const parsed = parseLocation();
+  if (parsed && activeChannel) {
+    const { owner, repo } = parsed;
+    const { isReview } = activeChannel;
+    await deletePullRequestComment(owner, repo, isReview, id);
+  }
 };
 
 export const Chat = () => {
@@ -244,38 +281,12 @@ export const Chat = () => {
     return <div />;
   }
 
-  const { collapsed, pr, channel } = state;
+  const { collapsed, pr, selectedChannel } = state;
 
-  const activeChannel = channel
-    ? pr.channels.find(c => c.key === channel) || pr.channels[0]
-    : pr.channels[0];
-
-  const onSendMessage = async (message: string) => {
-    const parsed = parseLocation();
-    if (parsed && activeChannel) {
-      const { owner, repo, prNumber } = parsed;
-      const { isReview, key } = activeChannel;
-      await createPullRequestComment(
-        owner,
-        repo,
-        prNumber,
-        isReview,
-        message,
-        key,
-      );
-    }
-  };
-
-  const onDeleteMessage = async (id: string) => {
-    const parsed = parseLocation();
-    if (parsed && activeChannel) {
-      const { owner, repo } = parsed;
-      const { isReview } = activeChannel;
-      await deletePullRequestComment(owner, repo, isReview, id);
-    }
-  };
-
-  const comments = activeChannel ? activeChannel.comments : [];
+  const activeChannel = pr.channels.find(
+    c => c.key === selectedChannel,
+  ) as Channel;
+  const comments = activeChannel.comments;
 
   return (
     <div>
@@ -286,9 +297,14 @@ export const Chat = () => {
         onRefreshClicked={refreshData}
       />
       {collapsed ? null : (
-        <Feed comments={comments} onDeleteMessage={onDeleteMessage} />
+        <Feed
+          comments={comments}
+          onDeleteMessage={onDeleteMessage(activeChannel)}
+        />
       )}
-      {collapsed ? null : <MessageBox onSendMessage={onSendMessage} />}
+      {collapsed ? null : (
+        <MessageBox onSendMessage={onSendMessage(activeChannel)} />
+      )}
     </div>
   );
 };

@@ -1,13 +1,13 @@
-interface Author {
+export interface Author {
   avatarUrl: string;
   login: string;
 }
 
-interface User extends Author {
+export interface User extends Author {
   name: string;
 }
 
-interface Comment {
+export interface Comment {
   id: string;
   bodyText: string;
   createdAt: Date;
@@ -17,14 +17,14 @@ interface Comment {
   canDelete: boolean;
 }
 
-interface Channel {
+export interface Channel {
   key: string;
   title: string;
   isReview: boolean;
   comments: Comment[];
 }
 
-interface Pr {
+export interface Pr {
   id: string;
   bodyText: string;
   title: string;

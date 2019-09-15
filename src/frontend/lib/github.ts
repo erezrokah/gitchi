@@ -1,4 +1,5 @@
 import * as storage from '../utils/storage';
+import { Channel, Comment, Pr } from '../components/types';
 export class AuthorizationError extends Error {}
 
 const getToken = async () => {

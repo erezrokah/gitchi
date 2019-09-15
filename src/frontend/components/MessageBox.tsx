@@ -43,6 +43,7 @@ export const MessageBox = (props: Props) => {
         onClick: sendMessage,
         primary: true,
         title: 'Send Message',
+        'data-testid': 'sendMessageButton',
       }}
     />
   );
