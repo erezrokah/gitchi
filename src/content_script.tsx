@@ -10,8 +10,7 @@ if (tabs) {
   chat.setAttribute('id', chatId);
   chat.setAttribute('class', 'gitchi-chat');
   chat.setAttribute('style', 'display: block;');
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  document.body.parentNode!.appendChild(chat);
+  document.body.parentNode && document.body.parentNode.appendChild(chat);
   import('./frontend/components/Chat').then(({ Chat }) => {
     ReactDOM.render(<Chat />, document.getElementById(chatId));
   });
