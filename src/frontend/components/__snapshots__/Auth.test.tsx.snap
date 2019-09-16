@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Auth should handle "authorization:github:error" message 1`] = `
+<DocumentFragment>
+  <div
+    class="ui basic center aligned segment"
+  >
+    <button
+      class="ui primary button"
+    >
+      Sign in to Gitchi
+    </button>
+    <div
+      class="ui negative message"
+    >
+      <div
+        class="header"
+      >
+        Failed to sign in to GitHub, please try again
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Auth should match snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="ui basic center aligned segment"
+  >
+    <button
+      class="ui primary button"
+    >
+      Sign in to Gitchi
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Auth should set error on "authorization:github:error" with no error 1`] = `
+<DocumentFragment>
+  <div
+    class="ui basic center aligned segment"
+  >
+    <button
+      class="ui primary button"
+    >
+      Sign in to Gitchi
+    </button>
+    <div
+      class="ui negative message"
+    >
+      <div
+        class="header"
+      >
+        Failed to sign in to GitHub, please try again
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Auth should set error on "authorization:github:success" with no data 1`] = `
+<DocumentFragment>
+  <div
+    class="ui basic center aligned segment"
+  >
+    <button
+      class="ui primary button"
+    >
+      Sign in to Gitchi
+    </button>
+    <div
+      class="ui negative message"
+    >
+      <div
+        class="header"
+      >
+        Failed to sign in to GitHub, please try again
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

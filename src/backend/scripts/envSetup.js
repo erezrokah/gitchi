@@ -1,16 +1,13 @@
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
-const yaml = require('js-yaml');
 require('dotenv').config({
   path: path.join(__dirname, '..', '..', '..', '.env'),
 });
 
 const getStackOutputs = async provider => {
-  const yamlContent = await fs.readFile(`serverless.yml`);
-  const serviceName = yaml.safeLoad(yamlContent).service;
   const { stage, region } = provider.options;
-  const stackName = `${serviceName}-${stage}`;
+  const stackName = provider.naming.getStackName();
   const result = await provider.request(
     'CloudFormation',
     'describeStacks',

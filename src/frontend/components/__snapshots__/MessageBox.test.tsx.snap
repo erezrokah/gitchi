@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageBox should match snapshot 1`] = `
+<DocumentFragment>
+  .c0 {
+  min-width: 400px;
+}
+
+<div
+    class="ui fluid action input c0"
+  >
+    <input
+      name="message"
+      placeholder="Message..."
+      type="text"
+      value=""
+    />
+    <button
+      class="ui icon primary button"
+      data-testid="sendMessageButton"
+      title="Send Message"
+    >
+      <i
+        aria-hidden="true"
+        class="send icon"
+      />
+    </button>
+  </div>
+</DocumentFragment>
+`;

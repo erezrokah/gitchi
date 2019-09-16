@@ -3,6 +3,7 @@ import { createRef, useEffect, forwardRef, Fragment } from 'react';
 import { Feed, Segment, Icon, Image } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { formatRelative } from 'date-fns';
+import { Comment } from './types';
 
 const StyledSegment = styled(Segment)`
   height: 500px;
@@ -50,7 +51,11 @@ const FeedEvent = (props: FeedEventProps) => {
         {canDelete ? (
           <Feed.Meta>
             <Feed.Like>
-              <Icon name="delete" onClick={() => onDeleteMessage(id)} />
+              <Icon
+                name="delete"
+                onClick={() => onDeleteMessage(id)}
+                data-testid={`delete-comment-${id}`}
+              />
             </Feed.Like>
           </Feed.Meta>
         ) : null}

@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChatFeed should match snapshot 1`] = `
+<DocumentFragment>
+  .c0 {
+  height: 500px;
+  width: 500px;
+  overflow: auto;
+}
+
+<div
+    class="ui bottom attached segment c0"
+  >
+    <div
+      class="ui feed"
+    >
+      <div
+        class="event"
+      >
+        <div
+          class="label"
+        >
+          <img
+            class="ui image"
+            src="authorAvatarUrl"
+          />
+        </div>
+        <div
+          class="content"
+        >
+          <div
+            class="summary"
+          >
+            <a
+              class="user"
+            >
+              authorLogin
+            </a>
+            <div
+              class="text extra"
+            >
+              comment 100
+            </div>
+            <div
+              class="date"
+            >
+              01/01/1970
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="event"
+      >
+        <div
+          class="label"
+        >
+          <img
+            class="ui image"
+            src="avatarUrl"
+          />
+        </div>
+        <div
+          class="content"
+        >
+          <div
+            class="summary"
+          >
+            <a
+              class="user"
+            >
+              login
+            </a>
+            <div
+              class="text extra"
+            >
+              comment 200
+            </div>
+            <div
+              class="date"
+            >
+              01/01/1970
+            </div>
+          </div>
+          <div
+            class="meta"
+          >
+            <a
+              class="like"
+            >
+              <i
+                aria-hidden="true"
+                class="delete icon"
+                data-testid="delete-comment-200"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ChatFeed should match snapshot with empty comments array 1`] = `
+<DocumentFragment>
+  .c0 {
+  height: 500px;
+  width: 500px;
+  overflow: auto;
+}
+
+<div
+    class="ui bottom attached segment c0"
+  >
+    <div
+      class="ui feed"
+    />
+  </div>
+</DocumentFragment>
+`;

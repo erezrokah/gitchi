@@ -1,4 +1,5 @@
 import * as storage from '../utils/storage';
+import { Channel, Comment, Pr } from '../components/types';
 export class AuthorizationError extends Error {}
 
 const getToken = async () => {
@@ -16,7 +17,9 @@ const get = async (path: string, query = '') => {
   const token = await getToken();
   const url = path.startsWith(API_ENDPOINT)
     ? path
-    : `${API_ENDPOINT}${path}?${query}&timestamp=${Date.now()}`;
+    : `${API_ENDPOINT}${path}?${
+        query ? query + '&' : ''
+      }timestamp=${Date.now()}`;
   const response = await fetch(url, {
     headers: {
       authorization: `token ${token}`,
@@ -32,7 +35,7 @@ const get = async (path: string, query = '') => {
   return response;
 };
 
-const post = async (path: string, data = {}) => {
+const post = async (path: string, data: Record<string, string>) => {
   const token = await getToken();
   const url = `${API_ENDPOINT}${path}`;
   const response = await fetch(url, {
@@ -69,12 +72,12 @@ export const parseLinkHeader = (link: string) => {
   const links = link.split(',').map(l => {
     const parts = l.split(';');
 
-    const link = (parts[0] || '').trim().match(/<(.*?)>/);
-    const rel = (parts[1] || '').match(/rel="(.*?)"/);
+    const link = (parts[0] as string).trim().match(/<(.*?)>/);
+    const rel = (parts[1] as string).trim().match(/rel="(.*?)"/);
 
     return {
-      link: link ? link[1] : '',
-      rel: rel ? rel[1] : '',
+      link: (link as RegExpExecArray)[1],
+      rel: (rel as RegExpExecArray)[1],
     };
   });
 
@@ -130,7 +133,7 @@ interface PrComment extends IssueComment {
   path: string;
 }
 
-export const getReviewComments = async (
+const getReviewComments = async (
   owner: string,
   repo: string,
   prNumber: number,

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Menu, MenuItemProps, Icon } from 'semantic-ui-react';
 import styled from 'styled-components';
+import { Channel } from './types';
 
 const StyledItem = styled(Menu.Item)`
   width: 130px;
@@ -34,8 +35,8 @@ export const ChatMenu = (props: Props) => {
     e: React.MouseEvent<HTMLAnchorElement>,
     { name }: MenuItemProps,
   ) => {
-    setActive(name || '');
-    onChannelSelect(name || '');
+    setActive(name as string);
+    onChannelSelect(name as string);
 
     if (collapsed) {
       toggleCollapse();

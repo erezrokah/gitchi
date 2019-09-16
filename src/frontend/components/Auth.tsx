@@ -12,14 +12,14 @@ const encodeQueryData = (data: Record<string, string>) => {
   return args.join('&');
 };
 
-const authEndpoint = process.env.REACT_APP_AUTH_ENDPOINT || '';
+const authEndpoint = process.env.REACT_APP_AUTH_ENDPOINT as string;
 const origin = authEndpoint.substring(0, authEndpoint.lastIndexOf('/'));
 
 interface Data {
   token: string;
 }
 
-interface Event {
+export interface Event {
   origin: string;
   data: string;
 }
@@ -111,7 +111,7 @@ export const Auth = ({ onAuthSuccess }: Props) => {
     window.addEventListener('message', handshakeCallback(), false);
 
     const url = `https://github.com/login/oauth/authorize?${encodeQueryData({
-      client_id: process.env.REACT_APP_OAUTH_CLIENT_ID || '',
+      client_id: process.env.REACT_APP_OAUTH_CLIENT_ID as string,
       state: cryptoRandomString({ length: 32, type: 'url-safe' }),
       allow_signup: `${false}`,
       scope: 'public_repo',
