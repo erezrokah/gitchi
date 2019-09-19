@@ -90,7 +90,13 @@ exports[`Chat Chat should match snapshot channel is selected 1`] = `
               <div
                 class="text extra"
               >
-                comment 200
+                <div
+                  class="markdown-body"
+                >
+                  <p>
+                    comment 200
+                  </p>
+                </div>
               </div>
               <div
                 class="date"
@@ -294,7 +300,13 @@ exports[`Chat Chat should match snapshot when not loading, authenticated with pr
               <div
                 class="text extra"
               >
-                comment 100
+                <div
+                  class="markdown-body"
+                >
+                  <p>
+                    comment 100
+                  </p>
+                </div>
               </div>
               <div
                 class="date"
