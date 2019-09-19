@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createRef, useEffect, forwardRef, Fragment } from 'react';
+import ReactMarkdown = require('react-markdown');
 import { Feed, Segment, Icon, Image } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { formatRelative } from 'date-fns';
@@ -45,7 +46,9 @@ const FeedEvent = (props: FeedEventProps) => {
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>{login}</Feed.User>
-          <Feed.Extra text>{bodyText}</Feed.Extra>
+          <Feed.Extra text>
+            <ReactMarkdown className="markdown-body" source={bodyText} />
+          </Feed.Extra>
           <Feed.Date>{formatRelative(createdAt, new Date())}</Feed.Date>
         </Feed.Summary>
         {canDelete ? (
