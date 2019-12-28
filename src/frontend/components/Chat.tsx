@@ -144,7 +144,7 @@ export const useGetPullRequestEffect = (
     if (user) {
       return fetchPullRequest(dispatch);
     }
-    return () => {};
+    return () => undefined;
   }, [user, dispatch]);
 };
 
@@ -183,6 +183,7 @@ export const useWebSocketEffect = (
     };
 
     if (user && prId) {
+      console.log(user, prId);
       getWebSocketUrl().then(url => {
         if (url) {
           socket = new WebSocket(url);
@@ -199,6 +200,7 @@ export const useWebSocketEffect = (
         socket.removeEventListener('message', onMessage);
         socket.removeEventListener('open', onOpen);
         socket.removeEventListener('close', onClose);
+        socket.close();
       }
       if (timeout) {
         clearTimeout(timeout as number);

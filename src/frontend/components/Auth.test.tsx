@@ -15,7 +15,7 @@ jest.mock('../utils/storage', () => {
   };
 });
 
-jest.spyOn(console, 'log').mockImplementation(() => {});
+jest.spyOn(console, 'log').mockImplementation(() => undefined);
 
 describe('Auth', () => {
   Object.assign(window, { width: 960 * 2 });
