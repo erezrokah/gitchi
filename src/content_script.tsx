@@ -20,7 +20,7 @@ if (tabs) {
           <div
             className={cx(
               css`
-                ${semantic};
+                ${semantic}
               `,
               css`
                 background-color: rgb(250, 250, 250);
