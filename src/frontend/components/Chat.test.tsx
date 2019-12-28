@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
@@ -48,7 +49,7 @@ jest.mock('../utils/webSocket', () => {
   };
 });
 
-jest.spyOn(console, 'log').mockImplementation(() => {});
+jest.spyOn(console, 'log').mockImplementation(() => undefined);
 
 const location = { href: 'https://github.com/' };
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -163,37 +164,46 @@ describe('Chat', () => {
     });
 
     test('should match snapshot when not loading, but unauthenticated', async () => {
+      let asFragment: () => DocumentFragment, rerender;
+
       await act(async () => {
         const userPromise = Promise.resolve();
         getCurrentUser.mockReturnValue(userPromise);
-        const { asFragment, rerender } = render(<Chat />);
+        ({ asFragment, rerender } = render(<Chat />));
 
         rerender(<Chat />);
 
         await userPromise;
-
-        expect(asFragment()).toMatchSnapshot();
-        expect(getCurrentUser).toHaveBeenCalledTimes(1);
       });
+
+      expect(asFragment!()).toMatchSnapshot();
+      expect(getCurrentUser).toHaveBeenCalledTimes(1);
     });
 
     test('should match snapshot when not loading, authenticated but no pr', async () => {
+      let asFragment: () => DocumentFragment, rerender;
+
       await act(async () => {
         const userPromise = Promise.resolve(user);
         getCurrentUser.mockReturnValue(userPromise);
 
-        const { asFragment, rerender } = render(<Chat />);
+        ({ asFragment, rerender } = render(<Chat />));
 
         rerender(<Chat />);
 
         await userPromise;
-
-        expect(asFragment()).toMatchSnapshot();
-        expect(getCurrentUser).toHaveBeenCalledTimes(1);
       });
+
+      expect(asFragment!()).toMatchSnapshot();
+      expect(getCurrentUser).toHaveBeenCalledTimes(1);
     });
 
     test('should match snapshot when not loading, authenticated with pr', async () => {
+      let asFragment: () => DocumentFragment,
+        rerender,
+        getByText: (text: string) => HTMLElement,
+        queryByText: (text: string) => HTMLElement | null;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -203,9 +213,7 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const { asFragment, rerender, getByText, queryByText } = render(
-          <Chat />,
-        );
+        ({ asFragment, rerender, getByText, queryByText } = render(<Chat />));
 
         rerender(<Chat />);
 
@@ -214,20 +222,25 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        expect(asFragment()).toMatchSnapshot();
-        expect(getCurrentUser).toHaveBeenCalledTimes(1);
-        expect(getPullRequest).toHaveBeenCalledTimes(1);
-        expect(getPullRequest).toHaveBeenCalledWith('owner', 'repo', 666);
-
-        expect(
-          getByText(pr.channels[0].comments[0].bodyText),
-        ).toBeInTheDocument();
-        expect(queryByText(pr.channels[1].comments[0].bodyText)).toBeNull();
       });
+
+      expect(asFragment!()).toMatchSnapshot();
+      expect(getCurrentUser).toHaveBeenCalledTimes(1);
+      expect(getPullRequest).toHaveBeenCalledTimes(1);
+      expect(getPullRequest).toHaveBeenCalledWith('owner', 'repo', 666);
+
+      expect(
+        getByText!(pr.channels[0].comments[0].bodyText),
+      ).toBeInTheDocument();
+      expect(queryByText!(pr.channels[1].comments[0].bodyText)).toBeNull();
     });
 
     test('should match snapshot when collapsed', async () => {
+      let asFragment: () => DocumentFragment,
+        rerender,
+        getByTitle: (text: string) => HTMLElement,
+        queryByText: (text: string) => HTMLElement | null;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -237,9 +250,7 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const { asFragment, rerender, getByTitle, queryByText } = render(
-          <Chat />,
-        );
+        ({ asFragment, rerender, getByTitle, queryByText } = render(<Chat />));
 
         rerender(<Chat />);
 
@@ -248,17 +259,22 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        fireEvent.click(getByTitle('Collapse'));
-
-        expect(asFragment()).toMatchSnapshot();
-
-        expect(queryByText(pr.channels[0].comments[0].bodyText)).toBeNull();
-        expect(queryByText(pr.channels[1].comments[0].bodyText)).toBeNull();
       });
+
+      fireEvent.click(getByTitle!('Collapse'));
+      expect(asFragment!()).toMatchSnapshot();
+
+      expect(queryByText!(pr.channels[0].comments[0].bodyText)).toBeNull();
+      expect(queryByText!(pr.channels[1].comments[0].bodyText)).toBeNull();
     });
 
     test('should match snapshot channel is selected', async () => {
+      let asFragment: () => DocumentFragment,
+        rerender,
+        getByTitle: (text: string) => HTMLElement,
+        getByText: (text: string) => HTMLElement,
+        queryByText: (text: string) => HTMLElement | null;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -268,13 +284,9 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const {
-          asFragment,
-          rerender,
-          getByTitle,
-          getByText,
-          queryByText,
-        } = render(<Chat />);
+        ({ asFragment, rerender, getByTitle, getByText, queryByText } = render(
+          <Chat />,
+        ));
 
         rerender(<Chat />);
 
@@ -283,19 +295,21 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        fireEvent.click(getByTitle(pr.channels[1].title));
-
-        expect(asFragment()).toMatchSnapshot();
-
-        expect(
-          getByText(pr.channels[1].comments[0].bodyText),
-        ).toBeInTheDocument();
-        expect(queryByText(pr.channels[0].comments[0].bodyText)).toBeNull();
       });
+
+      fireEvent.click(getByTitle!(pr.channels[1].title));
+
+      expect(asFragment!()).toMatchSnapshot();
+
+      expect(
+        getByText!(pr.channels[1].comments[0].bodyText),
+      ).toBeInTheDocument();
+      expect(queryByText!(pr.channels[0].comments[0].bodyText)).toBeNull();
     });
 
     test('should call createPullRequestComment when send message button is clicked', async () => {
+      let rerender, getByTestId: (id: string) => HTMLElement;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -305,7 +319,7 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const { getByTestId, rerender } = render(<Chat />);
+        ({ getByTestId, rerender } = render(<Chat />));
 
         rerender(<Chat />);
 
@@ -314,22 +328,26 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        fireEvent.click(getByTestId('sendMessageButton'));
-
-        expect(createPullRequestComment).toHaveBeenCalledTimes(1);
-        expect(createPullRequestComment).toHaveBeenCalledWith(
-          'owner',
-          'repo',
-          666,
-          pr.channels[0].isReview,
-          '',
-          pr.channels[0].key,
-        );
       });
+
+      fireEvent.click(getByTestId!('sendMessageButton'));
+
+      expect(createPullRequestComment).toHaveBeenCalledTimes(1);
+      expect(createPullRequestComment).toHaveBeenCalledWith(
+        'owner',
+        'repo',
+        666,
+        pr.channels[0].isReview,
+        '',
+        pr.channels[0].key,
+      );
     });
 
     test('should call deletePullRequestComment when delete button is clicked', async () => {
+      let getByTitle: (title: string) => HTMLElement,
+        rerender,
+        getByTestId: (id: string) => HTMLElement;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -339,7 +357,7 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const { getByTitle, rerender, getByTestId } = render(<Chat />);
+        ({ getByTitle, rerender, getByTestId } = render(<Chat />));
 
         rerender(<Chat />);
 
@@ -348,24 +366,25 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        fireEvent.click(getByTitle(pr.channels[1].title));
-        fireEvent.click(
-          getByTestId(`delete-comment-${pr.channels[1].comments[0].id}`),
-        );
-
-        expect(deletePullRequestComment).toHaveBeenCalledTimes(1);
-        expect(deletePullRequestComment).toHaveBeenCalledWith(
-          'owner',
-          'repo',
-
-          pr.channels[1].isReview,
-          pr.channels[1].comments[0].id,
-        );
       });
+
+      fireEvent.click(getByTitle!(pr.channels[1].title));
+      fireEvent.click(
+        getByTestId!(`delete-comment-${pr.channels[1].comments[0].id}`),
+      );
+
+      expect(deletePullRequestComment).toHaveBeenCalledTimes(1);
+      expect(deletePullRequestComment).toHaveBeenCalledWith(
+        'owner',
+        'repo',
+
+        pr.channels[1].isReview,
+        pr.channels[1].comments[0].id,
+      );
     });
 
     test('should add listeners to web socket', async () => {
+      let server: WS;
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -378,7 +397,7 @@ describe('Chat', () => {
         const url = 'ws://localhost:1234';
         const webSocketUrlPromise = Promise.resolve(url);
         getWebSocketUrl.mockReturnValue(webSocketUrlPromise);
-        const server = new WS('ws://localhost:1234');
+        server = new WS(url);
 
         const { rerender } = render(<Chat />);
 
@@ -393,24 +412,22 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await webSocketUrlPromise;
-
-        expect(getWebSocketUrl).toHaveBeenCalledTimes(1);
-
-        await server.connected;
-        server.send('invalid json');
-        server.close();
-
-        expect(console.log).toHaveBeenCalledWith('GitHub WebSocket open');
-        expect(console.log).toHaveBeenCalledWith(
-          'error',
-          new SyntaxError('Unexpected token i in JSON at position 0'),
-        );
-        expect(console.log).toHaveBeenCalledWith('GitHub WebSocket close');
-
-        await expect(server).toReceiveMessage(
-          `subscribe:pull_request:${pr.id}`,
-        );
       });
+
+      expect(getWebSocketUrl).toHaveBeenCalledTimes(1);
+
+      await server!.connected;
+      server!.send('invalid json');
+      server!.close();
+
+      expect(console.log).toHaveBeenCalledWith('GitHub WebSocket open');
+      expect(console.log).toHaveBeenCalledWith(
+        'error',
+        new SyntaxError('Unexpected token i in JSON at position 0'),
+      );
+      expect(console.log).toHaveBeenCalledWith('GitHub WebSocket close');
+
+      await expect(server!).toReceiveMessage(`subscribe:pull_request:${pr.id}`);
     });
 
     test('should fetch pr data on pull_request update message', async () => {
@@ -426,7 +443,7 @@ describe('Chat', () => {
         const url = 'ws://localhost:1234';
         const webSocketUrlPromise = Promise.resolve(url);
         getWebSocketUrl.mockReturnValue(webSocketUrlPromise);
-        const server = new WS('ws://localhost:1234');
+        const server = new WS(url);
 
         const { rerender } = render(<Chat />);
 
@@ -441,6 +458,8 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await webSocketUrlPromise;
+
+        rerender(<Chat />);
 
         await server.connected;
 
@@ -485,7 +504,7 @@ describe('Chat', () => {
         const url = 'ws://localhost:1234';
         const webSocketUrlPromise = Promise.resolve(url);
         getWebSocketUrl.mockReturnValue(webSocketUrlPromise);
-        const server = new WS('ws://localhost:1234');
+        const server = new WS(url);
 
         const { rerender } = render(<Chat />);
 
@@ -500,6 +519,8 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await webSocketUrlPromise;
+
+        rerender(<Chat />);
 
         await server.connected;
 
@@ -519,6 +540,8 @@ describe('Chat', () => {
     });
 
     test('should fetch pr data when send refresh button is clicked', async () => {
+      let getByTitle: (title: string) => HTMLElement, rerender;
+
       await act(async () => {
         location.href = 'https://github.com/owner/repo/pull/666';
 
@@ -528,7 +551,7 @@ describe('Chat', () => {
         const prPromise = Promise.resolve(pr);
         getPullRequest.mockReturnValue(prPromise);
 
-        const { getByTitle, rerender } = render(<Chat />);
+        ({ getByTitle, rerender } = render(<Chat />));
 
         rerender(<Chat />);
 
@@ -537,32 +560,38 @@ describe('Chat', () => {
         rerender(<Chat />);
 
         await prPromise;
-
-        jest.clearAllMocks();
-
-        fireEvent.click(getByTitle('Refresh'));
-
-        expect(getPullRequest).toHaveBeenCalledTimes(1);
-        expect(getPullRequest).toHaveBeenCalledWith('owner', 'repo', 666);
       });
+
+      jest.clearAllMocks();
+
+      await act(async () => {
+        fireEvent.click(getByTitle!('Refresh'));
+      });
+
+      expect(getPullRequest).toHaveBeenCalledTimes(1);
+      expect(getPullRequest).toHaveBeenCalledWith('owner', 'repo', 666);
     });
 
     test('should call getCurrentUser when onAuthSuccess is invoked', async () => {
+      let rerender, getByTestId: (id: string) => HTMLElement;
+
       await act(async () => {
         const userPromise = Promise.resolve();
         getCurrentUser.mockReturnValue(userPromise);
-        const { getByTestId, rerender } = render(<Chat />);
+        ({ getByTestId, rerender } = render(<Chat />));
 
         rerender(<Chat />);
 
         await userPromise;
-
-        jest.clearAllMocks();
-
-        fireEvent.click(getByTestId('mocked-auth-component'));
-
-        expect(getCurrentUser).toHaveBeenCalledTimes(1);
       });
+
+      jest.clearAllMocks();
+
+      await act(async () => {
+        fireEvent.click(getByTestId!('mocked-auth-component'));
+      });
+
+      expect(getCurrentUser).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -591,7 +620,7 @@ describe('Chat', () => {
       const dispatch = jest.fn();
 
       fetchCurrentUser(dispatch);
-      await promise.catch(() => {});
+      await promise.catch(() => undefined);
 
       expect(getCurrentUser).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -607,7 +636,7 @@ describe('Chat', () => {
       const dispatch = jest.fn();
 
       fetchCurrentUser(dispatch);
-      await promise.catch(() => {});
+      await promise.catch(() => undefined);
 
       expect(getCurrentUser).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledTimes(1);

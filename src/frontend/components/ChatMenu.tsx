@@ -48,7 +48,7 @@ export const ChatMenu = (props: Props) => {
     if (!props.channels.some(c => c.key === active)) {
       setActive(props.channels[0].key);
     }
-    return () => {};
+    return () => undefined;
   }, [props.channels, active]);
 
   const items = props.channels.map(({ key, title }) => {
