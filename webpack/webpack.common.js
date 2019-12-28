@@ -8,6 +8,9 @@ const dotenv = require('dotenv').config({
 const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = '../src/';
 
+const moduleNameToPath = libName =>
+  `${path.resolve(__dirname, `../node_modules/${libName}`)}/`;
+
 module.exports = {
   entry: {
     background: path.join(__dirname, srcDir + 'background.ts'),
@@ -27,7 +30,8 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        include: ['semantic-ui-css'].map(moduleNameToPath),
+        use: ['to-string-loader', 'css-loader'],
       },
       {
         test: /\.(eot|ttf|woff|woff2|svg|png|jpg)$/,
