@@ -183,7 +183,6 @@ export const useWebSocketEffect = (
     };
 
     if (user && prId) {
-      console.log(user, prId);
       getWebSocketUrl().then(url => {
         if (url) {
           socket = new WebSocket(url);
