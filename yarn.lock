@@ -830,9 +830,9 @@
     "@types/react" "*"
 
 "@types/react-native@*":
-  version "0.61.12"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.61.12.tgz#058c80f5aadb99b6cac1cf648e996b7795ca0fab"
-  integrity sha512-9Do0pTN9H3hnon0LUCTqIC5fCmFpKU5V8rJEH2iAAsCRm8+2Q7zPUMKuCaSRbO5zhXMW5oC8IE0nCfg1kqyXvw==
+  version "0.61.15"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.61.15.tgz#3b2032a9abd5e37c8a8cb0fc6a724d57811d4dbc"
+  integrity sha512-+lOUYk3yOfpyMy2HcVbR5bZnbExiVahMr3AqWNPh/01N0quH7nBzlou+/rpbvmDXSGwCh3QjWWfEkLNRfvbiiA==
   dependencies:
     "@types/react" "*"
 
@@ -860,9 +860,9 @@
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
 "@types/styled-components@^4.4.1":
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.4.2.tgz#709fa7afd7dc0963b8316a0159240f0fe19a026d"
-  integrity sha512-dngFx2PuGoy0MGE68eHayAmJvLSqWrnTe9w+DnQruu8PS+waWEsKmoBRhkzL2h2pK1OJhzJhVfuiz+oZa4etpA==
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.4.3.tgz#74dd00ad760845a98890a8539361d8afc32059de"
+  integrity sha512-U0udeNOZBfUkJycmGJwmzun0FBt11rZy08weVQmE2xfUNAbX8AGOEWxWna2d+qAUKxKgMlcG+TZT0+K2FfDcnQ==
   dependencies:
     "@types/hoist-non-react-statics" "*"
     "@types/react" "*"
@@ -2535,7 +2535,12 @@ cssstyle@^1.0.0:
   dependencies:
     cssom "0.3.x"
 
-csstype@^2.2.0, csstype@^2.5.7:
+csstype@^2.2.0:
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.9.tgz#05141d0cd557a56b8891394c1911c40c8a98d098"
+  integrity sha512-xz39Sb4+OaTsULgUERcCk+TJj8ylkL4aSVDQiX/ksxbELSqwkgt4d4RD7fovIdgJGSuNYqwZEiVjYY5l0ask+Q==
+
+csstype@^2.5.7:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.8.tgz#0fb6fc2417ffd2816a418c9336da74d7f07db431"
   integrity sha512-msVS9qTuMT5zwAGCVm4mxfrZ18BNc6Csd0oJAtiFMZ1FAx1CCvy2+5MDmYoix63LM/6NDbNtodCiGYGmFgO0dA==
