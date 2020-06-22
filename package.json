@@ -54,6 +54,7 @@
     "@types/chrome": "0.0.116",
     "@types/jest": "^24.0.25",
     "@types/jquery": "^3.3.30",
+    "@types/react-dom": "^16.9.8",
     "@types/simple-oauth2": "^2.5.2",
     "@types/styled-components": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
