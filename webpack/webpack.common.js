@@ -8,7 +8,7 @@ const dotenv = require('dotenv').config({
 const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = '../src/';
 
-const moduleNameToPath = libName =>
+const moduleNameToPath = (libName) =>
   `${path.resolve(__dirname, `../node_modules/${libName}`)}/`;
 
 module.exports = {
@@ -54,28 +54,30 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
-    new CopyPlugin([
-      {
-        from: './public',
-        to: './',
-        transform: (content, filePath) => {
-          if (
-            path.resolve(path.join('./public', 'manifest.json')) === filePath
-          ) {
-            const { version, description } = JSON.parse(
-              fs.readFileSync(path.join(__dirname, '..', 'package.json')),
-            );
+    new CopyPlugin({
+      patterns: [
+        {
+          from: './public',
+          to: './',
+          transform: (content, filePath) => {
+            if (
+              path.resolve(path.join('./public', 'manifest.json')) === filePath
+            ) {
+              const { version, description } = JSON.parse(
+                fs.readFileSync(path.join(__dirname, '..', 'package.json')),
+              );
 
-            content = JSON.parse(content.toString());
-            content.version = version;
-            content.description = description;
+              content = JSON.parse(content.toString());
+              content.version = version;
+              content.description = description;
 
-            return JSON.stringify(content, null, 2);
-          }
-          return content;
+              return JSON.stringify(content, null, 2);
+            }
+            return content;
+          },
         },
-      },
-    ]),
+      ],
+    }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(dotenv.parsed),
     }),
