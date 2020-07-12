@@ -61,15 +61,19 @@ const del = async (path: string) => {
   return response;
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<{
+  avatarUrl: string;
+  login: string;
+  name: string;
+}> => {
   const user = await get('user');
   const { avatar_url: avatarUrl, login, name } = await user.json();
   await storage.set({ login });
   return { avatarUrl, login, name };
 };
 
-export const parseLinkHeader = (link: string) => {
-  const links = link.split(',').map(l => {
+export const parseLinkHeader = (link: string): Record<string, string> => {
+  const links = link.split(',').map((l) => {
     const parts = l.split(';');
 
     const link = (parts[0] as string).trim().match(/<(.*?)>/);
@@ -114,7 +118,7 @@ const getAllResponses = async (url: string) => {
     }
   }
 
-  const jsons = await Promise.all(pageResponses.map(r => r.json()));
+  const jsons = await Promise.all(pageResponses.map((r) => r.json()));
 
   return jsons.flat();
 };
@@ -190,8 +194,8 @@ export const getPullRequest = async (
 ): Promise<Pr> => {
   const login = await storage.get('login');
   const [pullRequest, commentsData, reviewComments] = await Promise.all([
-    get(`repos/${owner}/${repo}/pulls/${prNumber}`).then(r => r.json()),
-    get(`repos/${owner}/${repo}/issues/${prNumber}/comments`).then(r =>
+    get(`repos/${owner}/${repo}/pulls/${prNumber}`).then((r) => r.json()),
+    get(`repos/${owner}/${repo}/issues/${prNumber}/comments`).then((r) =>
       r.json(),
     ),
     getReviewComments(owner, repo, prNumber, login),
@@ -244,7 +248,7 @@ export const createPullRequestComment = async (
   isReview: boolean,
   body: string,
   commentId: string,
-) => {
+): Promise<void> => {
   if (isReview) {
     await post(
       `repos/${owner}/${repo}/pulls/${prNumber}/comments/${commentId}/replies`,
@@ -260,7 +264,7 @@ export const deletePullRequestComment = async (
   repo: string,
   isReview: boolean,
   commentId: string,
-) => {
+): Promise<void> => {
   if (isReview) {
     await del(`repos/${owner}/${repo}/pulls/comments/${commentId}`);
   } else {

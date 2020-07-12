@@ -5,8 +5,8 @@ const chrome = {
     sync: { get: jest.fn(), set: jest.fn() },
   },
 };
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 global.chrome = chrome;
 
 describe('storage', () => {

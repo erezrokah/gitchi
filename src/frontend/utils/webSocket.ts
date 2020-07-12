@@ -1,4 +1,4 @@
-export const getWebSocketUrl = async () => {
+export const getWebSocketUrl = async (): Promise<string> => {
   const response = await fetch(window.location.href);
   const text = await response.text();
 

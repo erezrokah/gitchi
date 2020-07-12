@@ -11,7 +11,7 @@ interface Props {
   onSendMessage: (message: string) => void;
 }
 
-export const MessageBox = (props: Props) => {
+export const MessageBox = (props: Props): JSX.Element => {
   const [message, setMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

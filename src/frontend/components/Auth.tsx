@@ -38,7 +38,7 @@ const ErrorMessage = () => {
   );
 };
 
-export const Auth = ({ onAuthSuccess }: Props) => {
+export const Auth = ({ onAuthSuccess }: Props): JSX.Element => {
   const [error, setError] = useState<Error>();
   const authWindowRef = useRef<Window | null>(null);
 

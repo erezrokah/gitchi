@@ -5,7 +5,7 @@ require('dotenv').config({
   path: path.join(__dirname, '..', '..', '..', '.env'),
 });
 
-const getStackOutputs = async provider => {
+const getStackOutputs = async (provider) => {
   const { stage, region } = provider.options;
   const stackName = provider.naming.getStackName();
   const result = await provider.request(
@@ -42,7 +42,7 @@ const updateSSM = async (provider, endpoint) => {
     OAUTH_SCOPES: 'repo',
   };
 
-  const params = Object.keys(authSsmParameters).map(key => ({
+  const params = Object.keys(authSsmParameters).map((key) => ({
     Name: authSsmParameters[key],
     Value: envs[key],
     Type: 'SecureString',
@@ -50,7 +50,9 @@ const updateSSM = async (provider, endpoint) => {
   }));
 
   await Promise.all(
-    params.map(p => provider.request('SSM', 'putParameter', p, stage, region)),
+    params.map((p) =>
+      provider.request('SSM', 'putParameter', p, stage, region),
+    ),
   );
 };
 
@@ -60,9 +62,9 @@ const generateEnvFile = async (provider, endpoint) => {
   const stageUpperCase = stage.toUpperCase();
 
   const content = [
-    `REACT_APP_OAUTH_CLIENT_ID=${process.env[
-      `${stageUpperCase}_OAUTH_CLIENT_ID`
-    ] || ''}`,
+    `REACT_APP_OAUTH_CLIENT_ID=${
+      process.env[`${stageUpperCase}_OAUTH_CLIENT_ID`] || ''
+    }`,
     `REACT_APP_AUTH_ENDPOINT=${endpoint || ''}`,
   ].join(os.EOL);
 

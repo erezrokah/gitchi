@@ -1,6 +1,6 @@
-export const get = async (key: string) => {
-  const promise: Promise<string> = new Promise(resolve => {
-    chrome.storage.sync.get(key, result => {
+export const get = async (key: string): Promise<string> => {
+  const promise: Promise<string> = new Promise((resolve) => {
+    chrome.storage.sync.get(key, (result) => {
       resolve(result[key] || '');
     });
   });
@@ -10,8 +10,8 @@ export const get = async (key: string) => {
   return value;
 };
 
-export const set = async (object: Record<string, string>) => {
-  const promise = new Promise(resolve => {
+export const set = async (object: Record<string, string>): Promise<void> => {
+  const promise = new Promise((resolve) => {
     chrome.storage.sync.set(object, resolve);
   });
 

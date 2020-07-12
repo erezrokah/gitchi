@@ -16,8 +16,6 @@ import {
 import { Pr, User } from './types';
 import { AuthorizationError } from '../lib/github';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 jest.mock('../lib/github', () => {
@@ -52,8 +50,6 @@ jest.mock('../utils/webSocket', () => {
 jest.spyOn(console, 'log').mockImplementation(() => undefined);
 
 const location = { href: 'https://github.com/' };
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 global.window = Object.create(window);
 Object.defineProperty(window, 'location', {
   value: location,
@@ -473,7 +469,6 @@ describe('Chat', () => {
         ];
 
         jest.clearAllMocks();
-        jest.useFakeTimers();
 
         server.send(JSON.stringify(data));
 
@@ -486,7 +481,9 @@ describe('Chat', () => {
             reason: `pull request #${pr.id} updated`,
           },
         );
-        jest.advanceTimersByTime(300);
+
+        // https://github.com/facebook/jest/issues/7151
+        await new Promise((resolve) => setTimeout(resolve, 210));
         expect(getPullRequest).toHaveBeenCalledTimes(1);
       });
     });
@@ -740,14 +737,9 @@ describe('Chat', () => {
 
     test('default', () => {
       const state = { collapsed: false, loading: false };
-      expect(
-        reducer(
-          state,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          { type: 'Unknown' },
-        ),
-      ).toBe(state);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      expect(reducer(state, { type: 'Unknown' })).toBe(state);
     });
   });
 
