@@ -1,6 +1,8 @@
 import * as SSM from 'aws-sdk/clients/ssm';
 
-export const getSecrets = async (names: string[]) => {
+export const getSecrets = async (
+  names: string[],
+): Promise<Record<string, string>> => {
   const ssm = new SSM();
   const Parameters =
     (
@@ -13,7 +15,7 @@ export const getSecrets = async (names: string[]) => {
     ).Parameters || [];
 
   const result: Record<string, string> = {};
-  Parameters.forEach(currentItem => {
+  Parameters.forEach((currentItem) => {
     if (currentItem.Name) {
       result[currentItem.Name] = currentItem.Value || '';
     }

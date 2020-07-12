@@ -9,8 +9,6 @@ import {
 } from './github';
 
 const fetch = jest.fn();
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 global.fetch = fetch;
 
 jest.mock('../utils/storage', () => {
@@ -28,8 +26,8 @@ jest.useFakeTimers();
 
 Object.defineProperty(Array.prototype, 'flat', {
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  value: function(depth: number = 1) {
-    return this.reduce(function(flat: unknown[], toFlatten: unknown[]) {
+  value: function (depth: number = 1) {
+    return this.reduce(function (flat: unknown[], toFlatten: unknown[]) {
       return flat.concat(
         Array.isArray(toFlatten) && depth > 1
           ? toFlatten.flat(depth - 1)

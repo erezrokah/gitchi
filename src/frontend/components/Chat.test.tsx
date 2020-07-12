@@ -16,8 +16,6 @@ import {
 import { Pr, User } from './types';
 import { AuthorizationError } from '../lib/github';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 jest.mock('../lib/github', () => {
@@ -52,8 +50,6 @@ jest.mock('../utils/webSocket', () => {
 jest.spyOn(console, 'log').mockImplementation(() => undefined);
 
 const location = { href: 'https://github.com/' };
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 global.window = Object.create(window);
 Object.defineProperty(window, 'location', {
   value: location,
@@ -740,14 +736,9 @@ describe('Chat', () => {
 
     test('default', () => {
       const state = { collapsed: false, loading: false };
-      expect(
-        reducer(
-          state,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          { type: 'Unknown' },
-        ),
-      ).toBe(state);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      expect(reducer(state, { type: 'Unknown' })).toBe(state);
     });
   });
 

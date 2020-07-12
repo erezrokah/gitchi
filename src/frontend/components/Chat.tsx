@@ -69,7 +69,7 @@ export const reducer = (state: State, action: Action): State => {
         // initial load
         !selectedChannel ||
         // if the channel was removed
-        !pr.channels.some(c => c.key === selectedChannel)
+        !pr.channels.some((c) => c.key === selectedChannel)
       ) {
         selectedChannel = pr.channels[0].key;
       }
@@ -86,15 +86,15 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-export const fetchCurrentUser = (dispatch: Dispatch) => {
+export const fetchCurrentUser = (dispatch: Dispatch): void => {
   getCurrentUser()
-    .then(user => {
+    .then((user) => {
       dispatch({
         type: ActionType.USER_RECEIVED,
         payload: user,
       });
     })
-    .catch(e => {
+    .catch((e) => {
       if (e instanceof AuthorizationError) {
         dispatch({
           type: ActionType.API_AUTH_ERROR_RECEIVED,
@@ -107,7 +107,11 @@ export const fetchCurrentUser = (dispatch: Dispatch) => {
     });
 };
 
-export const parseLocation = () => {
+export const parseLocation = (): {
+  owner: string;
+  repo: string;
+  prNumber: number;
+} | null => {
   const match = window.location.href.match(
     /https:\/\/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/,
   );
@@ -119,11 +123,11 @@ export const parseLocation = () => {
   }
 };
 
-export const fetchPullRequest = (dispatch: Dispatch) => {
+export const fetchPullRequest = (dispatch: Dispatch): void => {
   const parsed = parseLocation();
   if (parsed) {
     const { owner, repo, prNumber } = parsed;
-    getPullRequest(owner, repo, prNumber).then(pr => {
+    getPullRequest(owner, repo, prNumber).then((pr) => {
       dispatch({
         payload: pr,
         type: ActionType.PR_RECEIVED,
@@ -132,14 +136,14 @@ export const fetchPullRequest = (dispatch: Dispatch) => {
   }
 };
 
-export const useGetCurrentUserEffect = (dispatch: Dispatch) => {
+export const useGetCurrentUserEffect = (dispatch: Dispatch): void => {
   useEffect(() => fetchCurrentUser(dispatch), [dispatch]);
 };
 
 export const useGetPullRequestEffect = (
   user: User | undefined,
   dispatch: Dispatch,
-) => {
+): void => {
   useEffect(() => {
     if (user) {
       return fetchPullRequest(dispatch);
@@ -152,7 +156,7 @@ export const useWebSocketEffect = (
   user: User | undefined,
   prId: string | undefined,
   dispatch: Dispatch,
-) => {
+): void => {
   useEffect(() => {
     let timeout: number | null = null;
     let socket: WebSocket | null = null;
@@ -183,7 +187,7 @@ export const useWebSocketEffect = (
     };
 
     if (user && prId) {
-      getWebSocketUrl().then(url => {
+      getWebSocketUrl().then((url) => {
         if (url) {
           socket = new WebSocket(url);
 
@@ -210,7 +214,7 @@ export const useWebSocketEffect = (
 
 export const onSendMessage = (activeChannel: Channel | undefined) => async (
   message: string,
-) => {
+): Promise<void> => {
   const parsed = parseLocation();
   if (parsed && activeChannel) {
     const { owner, repo, prNumber } = parsed;
@@ -228,7 +232,7 @@ export const onSendMessage = (activeChannel: Channel | undefined) => async (
 
 export const onDeleteMessage = (activeChannel: Channel | undefined) => async (
   id: string,
-) => {
+): Promise<void> => {
   const parsed = parseLocation();
   if (parsed && activeChannel) {
     const { owner, repo } = parsed;
@@ -237,7 +241,7 @@ export const onDeleteMessage = (activeChannel: Channel | undefined) => async (
   }
 };
 
-export const Chat = () => {
+export const Chat = (): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useGetCurrentUserEffect(dispatch);
@@ -285,7 +289,7 @@ export const Chat = () => {
   const { collapsed, pr, selectedChannel } = state;
 
   const activeChannel = pr.channels.find(
-    c => c.key === selectedChannel,
+    (c) => c.key === selectedChannel,
   ) as Channel;
   const comments = activeChannel.comments;
 

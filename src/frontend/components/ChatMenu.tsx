@@ -20,7 +20,7 @@ interface Props {
   channels: Channel[];
 }
 
-export const ChatMenu = (props: Props) => {
+export const ChatMenu = (props: Props): JSX.Element => {
   const { onMenuToggle, onChannelSelect, onRefreshClicked } = props;
 
   const [active, setActive] = useState(props.channels[0].key);
@@ -45,7 +45,7 @@ export const ChatMenu = (props: Props) => {
 
   // reset active if channel is removed
   useEffect(() => {
-    if (!props.channels.some(c => c.key === active)) {
+    if (!props.channels.some((c) => c.key === active)) {
       setActive(props.channels[0].key);
     }
     return () => undefined;

@@ -4,8 +4,6 @@ import { ChatFeed } from './ChatFeed';
 import { User } from './types';
 
 const scrollIntoView = jest.fn();
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
 describe('ChatFeed', () => {

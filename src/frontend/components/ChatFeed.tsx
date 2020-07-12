@@ -67,7 +67,7 @@ const FeedEvent = (props: FeedEventProps) => {
   );
 };
 
-export const ChatFeed = (props: Props) => {
+export const ChatFeed = (props: Props): JSX.Element => {
   const lastCommentRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
