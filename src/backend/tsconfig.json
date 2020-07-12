@@ -3,7 +3,7 @@
     "sourceMap": true,
     "lib": ["esnext", "dom"],
     "module": "commonjs",
-    "target": "es2017",
+    "target": "es2019",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "strict": true,

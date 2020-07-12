@@ -8,7 +8,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   tracing:
     lambda: true
 
@@ -19,22 +19,22 @@ provider:
   logRetentionInDays: 7
 
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
+        - 'xray:PutTraceSegments'
+        - 'xray:PutTelemetryRecords'
       Resource:
-        - "*"
+        - '*'
 
 custom:
   authSsmParameters:
-    GIT_HOSTNAME: "/${self:service}/oauth/${self:provider.stage}/GIT_HOSTNAME"
-    OAUTH_TOKEN_PATH: "/${self:service}/oauth/${self:provider.stage}/OAUTH_TOKEN_PATH"
-    OAUTH_AUTHORIZE_PATH: "/${self:service}/oauth/${self:provider.stage}/OAUTH_AUTHORIZE_PATH"
-    OAUTH_CLIENT_ID: "/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_ID"
-    OAUTH_CLIENT_SECRET: "/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_SECRET"
-    REDIRECT_URL: "/${self:service}/oauth/${self:provider.stage}/REDIRECT_URL"
-    OAUTH_SCOPES: "/${self:service}/oauth/${self:provider.stage}/OAUTH_SCOPES"
+    GIT_HOSTNAME: '/${self:service}/oauth/${self:provider.stage}/GIT_HOSTNAME'
+    OAUTH_TOKEN_PATH: '/${self:service}/oauth/${self:provider.stage}/OAUTH_TOKEN_PATH'
+    OAUTH_AUTHORIZE_PATH: '/${self:service}/oauth/${self:provider.stage}/OAUTH_AUTHORIZE_PATH'
+    OAUTH_CLIENT_ID: '/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_ID'
+    OAUTH_CLIENT_SECRET: '/${self:service}/oauth/${self:provider.stage}/OAUTH_CLIENT_SECRET'
+    REDIRECT_URL: '/${self:service}/oauth/${self:provider.stage}/REDIRECT_URL'
+    OAUTH_SCOPES: '/${self:service}/oauth/${self:provider.stage}/OAUTH_SCOPES'
 
   scriptHooks:
     after:deploy:finalize:
@@ -43,7 +43,7 @@ custom:
   webpack:
     webpackConfig: webpack.config.js
     includeModules: false
-    packager: "yarn"
+    packager: 'yarn'
 
 package:
   individually: true
@@ -70,7 +70,7 @@ functions:
       - Effect: Allow
         Action:
           - ssm:GetParameters
-        Resource: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*"
+        Resource: 'arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*'
 
   callback:
     handler: src/callback.handler
@@ -93,7 +93,7 @@ functions:
       - Effect: Allow
         Action:
           - ssm:GetParameters
-        Resource: "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*"
+        Resource: 'arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:service}/oauth/${self:provider.stage}/*'
 
   success:
     handler: src/success.handler
