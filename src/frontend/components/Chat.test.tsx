@@ -469,7 +469,6 @@ describe('Chat', () => {
         ];
 
         jest.clearAllMocks();
-        jest.useFakeTimers();
 
         server.send(JSON.stringify(data));
 
@@ -482,7 +481,9 @@ describe('Chat', () => {
             reason: `pull request #${pr.id} updated`,
           },
         );
-        jest.advanceTimersByTime(300);
+
+        // https://github.com/facebook/jest/issues/7151
+        await new Promise((resolve) => setTimeout(resolve, 210));
         expect(getPullRequest).toHaveBeenCalledTimes(1);
       });
     });
