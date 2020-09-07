@@ -52,7 +52,7 @@
     "@testing-library/react": "^10.4.9",
     "@types/aws-lambda": "^8.10.61",
     "@types/chrome": "0.0.122",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.13",
     "@types/jquery": "^3.3.30",
     "@types/react-dom": "^16.9.8",
     "@types/simple-oauth2": "^2.5.2",
