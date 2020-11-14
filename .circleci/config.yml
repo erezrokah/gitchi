@@ -15,7 +15,7 @@ aliases:
   - &deploy_prod_filters
     filters:
       branches:
-        only: master
+        only: main
 
   - &save_cache
     save_cache:
@@ -144,7 +144,7 @@ workflows:
             - test
           filters:
             branches:
-              only: master
+              only: main
 
       - deploy-prod:
           requires:
