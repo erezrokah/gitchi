@@ -51,7 +51,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^10.4.9",
     "@types/aws-lambda": "^8.10.62",
-    "@types/chrome": "0.0.126",
+    "@types/chrome": "0.0.127",
     "@types/jest": "^26.0.13",
     "@types/jquery": "^3.5.1",
     "@types/react-dom": "^16.9.8",
