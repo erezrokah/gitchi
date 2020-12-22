@@ -158,7 +158,7 @@ export const useWebSocketEffect = (
   dispatch: Dispatch,
 ): void => {
   useEffect(() => {
-    let timeout: number | null = null;
+    let timeout: NodeJS.Timeout | null = null;
     let socket: WebSocket | null = null;
 
     const onOpen = () => {
@@ -206,7 +206,7 @@ export const useWebSocketEffect = (
         socket.close();
       }
       if (timeout) {
-        clearTimeout(timeout as number);
+        clearTimeout(timeout as NodeJS.Timeout);
       }
     };
   }, [user, prId, dispatch]);
