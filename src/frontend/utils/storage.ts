@@ -11,7 +11,7 @@ export const get = async (key: string): Promise<string> => {
 };
 
 export const set = async (object: Record<string, string>): Promise<void> => {
-  const promise = new Promise((resolve) => {
+  const promise = new Promise<void>((resolve) => {
     chrome.storage.sync.set(object, resolve);
   });
 
