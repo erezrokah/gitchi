@@ -90,7 +90,7 @@
     "to-string-loader": "^1.1.6",
     "ts-jest": "^26.1.1",
     "ts-loader": "^8.0.0",
-    "typescript": "~3.9.0",
+    "typescript": "~4.1.0",
     "url-loader": "^4.1.0",
     "webpack": "~4.44.0",
     "webpack-bundle-analyzer": "^3.6.0",
