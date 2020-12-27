@@ -8,9 +8,6 @@ const dotenv = require('dotenv').config({
 const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = '../src/';
 
-const moduleNameToPath = (libName) =>
-  `${path.resolve(__dirname, `../node_modules/${libName}`)}/`;
-
 module.exports = {
   entry: {
     background: path.join(__dirname, srcDir + 'background.ts'),
@@ -29,9 +26,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/i,
-        include: ['semantic-ui-css'].map(moduleNameToPath),
-        use: ['to-string-loader', 'css-loader'],
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(eot|ttf|woff|woff2|svg|png|jpg)$/,
@@ -52,6 +48,11 @@ module.exports = {
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
+    fallback: {
+      util: require.resolve('util/'),
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
   },
   plugins: [
     new CopyPlugin({
@@ -80,6 +81,9 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(dotenv.parsed),
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
     }),
   ],
 };

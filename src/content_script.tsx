@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { ClassNames } from '@emotion/core';
+import { ClassNames } from '@emotion/react';
 import * as ReactDOM from 'react-dom';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import s from 'semantic-ui-css/semantic.min.css';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const semantic = require('semantic-ui-css/semantic.min.css')
-  .replace(/\:first-child/g, ':first-of-type')
-  .replace(/\:nth-child/g, ':nth-of-type');
-
-const tabs = document.querySelector('[class="tabnav-tabs"]');
+const tabs = document.querySelector('.tabnav');
 if (tabs) {
   const chatId = 'gitchi-chat';
   const chat = document.createElement('div');
@@ -20,7 +18,7 @@ if (tabs) {
           <div
             className={cx(
               css`
-                ${semantic}
+                ${s}
               `,
               css`
                 background-color: rgb(250, 250, 250);

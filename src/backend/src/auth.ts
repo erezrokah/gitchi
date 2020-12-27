@@ -1,5 +1,5 @@
 // https://github.com/marksteele/netlify-serverless-oauth2-backend/blob/master/auth.js
-import { Handler, APIGatewayProxyEvent } from 'aws-lambda';
+import { Handler } from 'aws-lambda';
 import simpleOauthModule = require('simple-oauth2');
 import cryptoRandomString = require('crypto-random-string');
 import { getSecrets } from './utils';
@@ -26,7 +26,7 @@ const names = [
   OAUTH_SCOPES,
 ];
 
-export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
+export const handler: Handler = async () => {
   if (!secrets) {
     secrets = await getSecrets(names);
   }
@@ -49,10 +49,10 @@ export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
     state: cryptoRandomString({ length: 32 }),
   });
 
-  cb(null, {
+  return {
     statusCode: 302,
     headers: {
       Location: authorizationUri,
     },
-  });
+  };
 };

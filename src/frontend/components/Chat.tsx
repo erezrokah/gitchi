@@ -158,8 +158,8 @@ export const useWebSocketEffect = (
   dispatch: Dispatch,
 ): void => {
   useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
-    let socket: WebSocket | null = null;
+    let timeout: NodeJS.Timeout;
+    let socket: WebSocket;
 
     const onOpen = () => {
       console.log('GitHub WebSocket open');
@@ -206,7 +206,7 @@ export const useWebSocketEffect = (
         socket.close();
       }
       if (timeout) {
-        clearTimeout(timeout as NodeJS.Timeout);
+        clearTimeout(timeout);
       }
     };
   }, [user, prId, dispatch]);

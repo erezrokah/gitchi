@@ -43,7 +43,7 @@ const getScript = (message: string, content: any) => {
   </script></body></html>`;
 };
 
-export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
+export const handler: Handler = async (e: APIGatewayProxyEvent) => {
   if (!secrets) {
     secrets = await getSecrets(names);
   }
@@ -61,7 +61,7 @@ export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
 
   try {
     const { queryStringParameters } = e;
-    const { code } = queryStringParameters || { code: '' };
+    const { code = '' } = queryStringParameters || { code: '' };
 
     const options = {
       code,
@@ -70,7 +70,7 @@ export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
     };
     const result = await oauth2.authorizationCode.getToken(options);
     const token = oauth2.accessToken.create(result);
-    cb(null, {
+    return {
       statusCode: 200,
       headers: {
         'Content-Type': 'text/html',
@@ -79,14 +79,14 @@ export const handler: Handler = async (e: APIGatewayProxyEvent, ctx, cb) => {
         token: token.token.access_token,
         provider: 'github',
       }),
-    });
+    };
   } catch (err) {
-    cb(null, {
+    return {
       statusCode: 200,
       headers: {
         'Content-Type': 'text/html',
       },
       body: getScript('error', err),
-    });
+    };
   }
 };
