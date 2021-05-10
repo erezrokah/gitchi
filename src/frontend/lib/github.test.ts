@@ -113,10 +113,8 @@ describe('github', () => {
     test('should parse link header', () => {
       const link = `<https://api.github.com/search/code?q=addClass+user%3Amozilla&page=2>; rel="next", <https://api.github.com/search/code?q=addClass+user%3Amozilla&page=34>; rel="last"`;
       expect(parseLinkHeader(link)).toEqual({
-        next:
-          'https://api.github.com/search/code?q=addClass+user%3Amozilla&page=2',
-        last:
-          'https://api.github.com/search/code?q=addClass+user%3Amozilla&page=34',
+        next: 'https://api.github.com/search/code?q=addClass+user%3Amozilla&page=2',
+        last: 'https://api.github.com/search/code?q=addClass+user%3Amozilla&page=34',
       });
     });
   });
