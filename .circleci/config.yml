@@ -6,7 +6,7 @@ orbs:
 aliases:
   - &container_config
     docker:
-      - image: circleci/node:dubnium-browsers
+      - image: cimg/node:current-browsers
 
     working_directory: ~/repo
 
