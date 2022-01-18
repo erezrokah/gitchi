@@ -1,15 +1,3 @@
 {
-  "extends": [
-    "config:base",
-    "schedule:weekly"
-  ],
-  "masterIssue": true,
-  "rangeStrategy": "update-lockfile",
-  "automerge": true,
-  "major": {
-    "automerge": false
-  },
-  "lockFileMaintenance": {
-    "enabled": true
-  }
+  "extends": ["github>erezrokah/shared-configurations:renovate-default"]
 }
