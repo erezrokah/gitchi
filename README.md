@@ -6,7 +6,7 @@ Turns GitHub Pull Request Comments into a Chat
 
 ## Prerequisites
 
-- [node + npm](https://nodejs.org/) (>=10)
+- [node + npm](https://nodejs.org/) (>=16)
 
 - [yarn](https://yarnpkg.com/en/)
 

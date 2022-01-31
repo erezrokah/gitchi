@@ -45,11 +45,14 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^16.0.0",
     "@commitlint/config-conventional": "^16.0.0",
     "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.0.0",
+    "@testing-library/react": "^12.0.0",
     "@types/aws-lambda": "^8.10.68",
     "@types/chrome": "0.0.177",
     "@types/jest": "^26.0.13",
@@ -69,7 +72,7 @@
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^10.0.0",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "jest-junit": "^12.0.0",
