@@ -49,7 +49,7 @@
     "@commitlint/cli": "^16.0.0",
     "@commitlint/config-conventional": "^16.0.0",
     "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.0.0",
+    "@testing-library/react": "^12.0.0",
     "@types/aws-lambda": "^8.10.68",
     "@types/chrome": "0.0.177",
     "@types/jest": "^26.0.13",
