@@ -90,7 +90,7 @@
     "simple-oauth2": "^3.0.0",
     "source-map-loader": "^2.0.0",
     "stream-browserify": "^3.0.0",
-    "style-loader": "^2.0.0",
+    "style-loader": "^3.0.0",
     "stylelint": "^13.6.1",
     "stylelint-config-recommended": "^3.0.0",
     "to-string-loader": "^1.1.6",
